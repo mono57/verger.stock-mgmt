@@ -53,6 +53,7 @@
                 <tr >
                     <td>{{product.pk}}</td>
                     <td>{{product.name}}</td>
+                   {% if product.is_portionable %}
                     <td>{% for partition in product.partition.all %}
                        <span class="badge bg-secondary">
                          {{partition.cooking_type}} 
@@ -62,6 +63,10 @@
                         {% endfor %}
                         </td>
                     <td><a href="">Ajouter un plat</a></td>
+                   {% else %}
+                   <td colspan="2"><span class="badge bg-primary">
+                        Produit non portionable</span></td>
+                   {% endif %}
                 </tr>
                 {% empty %}
                 <tr>

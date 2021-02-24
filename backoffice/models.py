@@ -55,8 +55,13 @@ class Product(models.Model):
 
     partition = models.ManyToManyField(
         PartitionFormulla,
+        blank=True,
         verbose_name='Types de préparation qu\'on peut faire avec ce produit',
         help_text='Appuyez sur Shift pour selectionner plusieurs')
+
+    @property
+    def is_portionable(self):
+        return self.ProductCategory.PORTIONABLE == self.category
 
     class Meta:
         verbose_name = 'Produit'
@@ -69,7 +74,9 @@ class Product(models.Model):
 class Portion(models.Model):
     store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
-    partition = models.ForeignKey(PartitionFormulla, on_delete=models.DO_NOTHING)
+    partition = models.ForeignKey(
+        PartitionFormulla, on_delete=models.DO_NOTHING)
+
 
 class Dish(models.Model):
     name = models.CharField(
@@ -145,7 +152,7 @@ class InvoiceEntry(models.Model):
     quantity = models.IntegerField(verbose_name='Quantité achetée')
     price = models.IntegerField()
 
-    
+
 class Buying(models.Model):
     date = models.DateField(default=timezone.now)
 
