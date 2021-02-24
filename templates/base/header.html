@@ -1,4 +1,4 @@
-{% url 'password_reset_view' as password_reset_url %}
+{% url 'password_change_view' as password_change_url %}
 
 <nav class="navbar navbar-expand-lg sticky-top navbar-light flex-md-nowrap bg-light">
   <div class="container-fluid">
@@ -17,7 +17,7 @@
               {{request.user.username}}</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="{{password_reset_url}}">Modifier mot de passe</a></li>
+            <li><a class="dropdown-item" href="{{password_change_url}}">Modifier mot de passe</a></li>
           </ul>
         </li>
         <li class="nav-item">
