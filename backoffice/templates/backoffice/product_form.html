@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-6">
+    <h1 class="h2">Enregistrer un nouveau produit</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{form.name.name}}">{{form.name.label}}</label>
+            {{form.name}}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{form.category.name}}">{{form.category.label}}</label>
+            {{form.category}}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{form.partition.name}}">{{form.partition.label}}</label>
+            {{form.partition}}
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-dark" type="submit">Enregistrer</button>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

@@ -1,9 +1,11 @@
 from django.urls import path
-from django.views.generic import TemplateView
-
+from backoffice.views import (
+    ProductCreateView, 
+    DashboardTemplateView)
 
 app_name = 'backoffice'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', DashboardTemplateView.as_view(template_name='index.html'), name='home'),
+    path('product/add/', ProductCreateView.as_view(), name='product-add'),
 ]
