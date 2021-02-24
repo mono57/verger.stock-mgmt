@@ -4,9 +4,21 @@
   <div class="container-fluid">
     <h1 class="h3">Verger</h1>
 
+    {% if request.user.is_authenticated %}
+
     <div class="container">
       <ul class="navbar-nav pl-4 me-auto mb-2 mb-lg-0 ml-auto" style="margin-left:6.2rem">
-        
+        <li class="nav-item dropdown d-inline">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <span class="text-dark">
+              Gérer les utilisateurs</span>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Ajouter un caissier</a></li>
+            <li><a class="dropdown-item" href="#">Liste des utilisateurs</a></li>
+          </ul>
+        </li>
         <li class="nab-item">
           <span class="nav-link"> Connecté en tant que</span>
         </li>
@@ -21,11 +33,11 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-danger" href="#">Déconnexion</a>
+          <a class="nav-link text-danger" href="{% url 'logout' %}">Déconnexion</a>
         </li>
       </ul>
-     
-    </div>
+
+    </div> {% endif %}
 
   </div>
 </nav>
