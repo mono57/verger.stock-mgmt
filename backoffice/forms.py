@@ -12,3 +12,10 @@ class ProductModelForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-select'}),
             'partition': forms.SelectMultiple(attrs={'class': 'form-select'}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        qs = Product.objects.filter(name=name)
+        if qs.exists():
+            raise forms.ValidationError('Un produit de même existe déjà !') 
+        return name
