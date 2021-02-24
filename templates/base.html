@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "base/css.html" %}
+    <title>
+    </title>
+</head>
+
+<body>
+   
+     {% include "base/header.html" %}
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+           {% block sidebar %}
+            {% include "base/sidebar.html" %}
+           {% endblock sidebar %}
+
+            <main>
+
+                {% block content %}
+
+                {% endblock content %}
+            </main>
+
+        </div>
+
+    </div>
+
+    {% include "base/js.html" %}
+</body>
+
+</html>

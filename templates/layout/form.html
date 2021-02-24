@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="label">Input Text</label>
+        <input type="text" class="form-control" name="label" required>
+    </div>
+    <div class="mb-3">
+        <label for="">Select</label>
+        <select name="" id="">
+            <option value="">Option 1</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="">Multi Select</label>
+        <select name="" class="form-control" multiple id="">
+            <option value="">Option 1</option>
+            <option value="">Option 1</option>
+            <option value="">Option 1</option>
+            <option value="">Option 1</option>
+        </select>
+    </div>
+    <button class="btn btn-dark btn-block btn-sm" type="submit"> Se connnecter </button>
+</form>
+
+{% endblock content %}
