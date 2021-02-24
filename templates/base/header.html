@@ -1,15 +1,31 @@
-  <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Verger</a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-      data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    {% comment %} <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> {% endcomment %}
-    {% if request.user.is_authenticated %}
-    
-<ul class="navbar-nav px-3">
-      <li class="nav-item text-nowrap">
-        <a class="nav-link" href="#">Sign out</a>
-      </li>
-    </ul>    {% endif %}
-  </header>
+{% url 'password_reset_view' as password_reset_url %}
+
+<nav class="navbar navbar-expand-lg sticky-top navbar-light flex-md-nowrap bg-light">
+  <div class="container-fluid">
+    <h1 class="h3">Verger</h1>
+
+    <div class="container">
+      <ul class="navbar-nav pl-4 me-auto mb-2 mb-lg-0 ml-auto" style="margin-left:6.2rem">
+        
+        <li class="nab-item">
+          <span class="nav-link"> Connecté en tant que</span>
+        </li>
+        <li class="nav-item dropdown d-inline">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <span class="text-dark">
+              {{request.user.username}}</span>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{password_reset_url}}">Modifier mot de passe</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="#">Déconnexion</a>
+        </li>
+      </ul>
+     
+    </div>
+
+  </div>
+</nav>
