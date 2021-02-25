@@ -27,7 +27,10 @@ class ProductCreateView(
         context['products'] = Product.objects.all()
         return context
 
-
+class ProductListView(LoginRequiredMixin, ListView):
+    template_name = 'backoffice/product_list.html'
+    model = Product
+    context_object_name = 'products'
 class RoomCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'backoffice/room_form.html'
     form_class = RoomModelForm
