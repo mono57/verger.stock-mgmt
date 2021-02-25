@@ -6,7 +6,9 @@
     {% if messages %}
     {% include "backoffice/includes/message.html" %}
     {% endif %}
-    <h1 class="h2">Enregistrer une salle</h1>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Enregistrer une salle</h1>
+    </div>
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">
