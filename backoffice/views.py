@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.base import TemplateView
@@ -7,8 +7,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
-from backoffice.models import Product, Room
-from backoffice.forms import ProductModelForm, RoomModelForm
+from backoffice.models import Product, Room, Price
+from backoffice.forms import DishModelForm, ProductModelForm, RoomModelForm
 
 
 class DashboardTemplateView(LoginRequiredMixin, TemplateView):
@@ -52,3 +52,24 @@ class RoomUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self) -> str:
         return reverse('backoffice:room_update', kwargs={'pk': self.get_object().pk})
+
+
+class DishCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = 'backoffice/dish_form.html'
+    form_class = DishModelForm
+    success_url = reverse_lazy('backoffice:dish-add')
+    success_message = 'Nouveau plat defini avec succès'
+
+    def form_valid(self, form):
+        cleaned_data = form.cleaned_data
+        dish_obj = form.save()
+        price_fields_names = filter(lambda val: 'price' in val, cleaned_data.keys())
+        for price_field_name in price_fields_names:
+            Price.objects.create(
+                price=cleaned_data.get(price_field_name),
+                room=get_object_or_404(Room, pk=price_field_name.split('_')[2]),
+                dish=dish_obj
+            )
+        return super().form_valid(form)
+
+        

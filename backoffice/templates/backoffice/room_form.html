@@ -4,10 +4,7 @@
 
 <div class="col-6">
     {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-dark"> {{message}}</div>
-
-    {% endfor %}
+    {% include "backoffice/includes/message.html" %}
     {% endif %}
     <h1 class="h2">Enregistrer une salle</h1>
     <form method="post">

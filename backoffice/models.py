@@ -82,10 +82,13 @@ class Dish(models.Model):
     name = models.CharField(
         max_length=250,
         verbose_name="Nom du plat")
-    portion = models.ForeignKey(
-        Portion,
-        on_delete=models.DO_NOTHING,
-        related_name='dishs')
+
+    partition = models.ForeignKey(
+        PartitionFormulla,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='dishs',
+        verbose_name='Formule de partition')
 
     class Meta:
         verbose_name = 'Plat'
