@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import widgets
 
-from backoffice.models import Product
+from backoffice.models import Product, Room
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -18,4 +18,21 @@ class ProductModelForm(forms.ModelForm):
         qs = Product.objects.filter(name=name)
         if qs.exists():
             raise forms.ValidationError('Un produit de même existe déjà !') 
+        return name
+
+
+class RoomModelForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ('name',)
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        qs = Room.objects.filter(name=name)
+        if qs.exists():
+            raise forms.ValidationError('Cette salle existe déjà')
+
         return name

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-6">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-dark"> {{message}}</div>
+
+    {% endfor %}
+    {% endif %}
+    <h1 class="h2">Enregistrer une salle</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{form.name.name}}">{{form.name.label}}</label>
+            <input type="text" class="form-control {% if form.name.errors %} is-invalid {% endif %}"
+                name="{{form.name.name}}" value="{{form.name.value|default:""}}">
+            <div class="invalid-feedback">
+                {{form.name.errors}}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-sm btn-dark">Enregistrer</button> 
+        <a href="{% url 'backoffice:room-list' %}">Aller à la liste</a>
+
+    </form>
+
+</div>
+{% endblock content %}
