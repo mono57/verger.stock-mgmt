@@ -2,7 +2,7 @@ from django.urls import path
 from backoffice.views import (
     BuyingCreateView, BuyingEntryCreateView, DishCreateView, ProductCreateView, 
     DashboardTemplateView, ProductListView, 
-    RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, UserCreateView, UserListView)
+    RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, UserCreateView, UserListView, state_sale)
 
 app_name = 'backoffice'
 
@@ -25,4 +25,5 @@ urlpatterns = [
         'buying/<int:buying_pk>/product/add/', 
         BuyingEntryCreateView.as_view(), 
         name='buying-product-add'),
+    path('state-sale', state_sale, name='state_sale'),
 ]

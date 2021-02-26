@@ -174,3 +174,7 @@ class UserActivateDeactivateView(LoginRequiredMixin, View):
 
         self.get_success_message(name=user, action=action)
         return redirect('backoffice:user-list')
+
+def state_sale(request):
+
+    return render(request,'backoffice/state_sale.html')

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Etat de vente du restaurant</h3>
+<form action="#" method="GET" >
+    <div class="mb-3">
+        <select class="form-control">
+            <option>Journalier</option>
+            <option>Hebdomadaire</option>
+            <option>Mensuel</option>
+        </select>
+    </div>
+
+    <div class="mb-3 d-flex align-items-center">
+        <button class="btn btn-dark" type="submit">Soumettre</button>
+        <div class="spinner-border text-dark" role="status" style="margin-left:12px; display:none">
+            <span class="visually-hidden ml-3">Loading...</span>
+        </div>
+    </div>
+</form>
+{% endblock content %}
