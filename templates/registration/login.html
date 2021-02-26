@@ -3,7 +3,8 @@
 {% block sidebar %}{% endblock sidebar %}
 
 {% block content %}
-<div class="col-5">
+<div class="col-2"></div>
+<div class="col-5 border p-5 rounded">
     <h3>Connexion</h3>
     {% if form.errors %}
     <div class="alert alert-danger">
@@ -22,8 +23,5 @@
         </div>
         <button class="btn btn-dark btn-block btn-sm" type="submit"> Se connnecter </button>
     </form>
-
 </div>
-
-
 {% endblock content %}
