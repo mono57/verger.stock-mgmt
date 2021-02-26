@@ -62,7 +62,7 @@ class Product(TimeStampedModel):
         max_length=2,
         choices=ProductCategory.choices,
         default=ProductCategory.PORTIONABLE,
-        verbose_name="Catergorie du produit")
+        verbose_name="Categorie du produit")
 
     partition = models.ManyToManyField(
         PartitionFormulla,
