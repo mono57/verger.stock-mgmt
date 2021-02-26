@@ -1,6 +1,6 @@
 from django.urls import path
 from backoffice.views import (
-    BuyingCreateView, BuyingEntryCreateView, DishCreateView, ProductCreateView, 
+    BuyingCreateView, BuyingEntryCreateView, DishCreateView, DrinkCreateView, ProductCreateView, 
     DashboardTemplateView, ProductListView, 
     RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, UserCreateView, UserListView, state_sale)
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path('buying/add/', BuyingCreateView.as_view(), name='buying-add'),
     path('user/add/', UserCreateView.as_view(), name='user-add'),
     path('user/list/', UserListView.as_view(), name='user-list'),
+    path('drink/add/', DrinkCreateView.as_view(), name='drink-add'),
     path(
         'user/activate/deactivate/', 
         UserActivateDeactivateView.as_view(), 

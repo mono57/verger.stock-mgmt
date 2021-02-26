@@ -2,7 +2,7 @@ from django.utils import timezone
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
-from backoffice.models import Buying, BuyingEntry, Dish, PartitionFormulla, Product, Room
+from backoffice.models import Buying, BuyingEntry, Dish, Drink, PartitionFormulla, Product, Room
 
 
 User = get_user_model()
@@ -41,9 +41,7 @@ class RoomModelForm(forms.ModelForm):
 
         return name
 
-
-class DishModelForm(forms.ModelForm):
-
+class AbstractSellableModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         rooms = Room.objects.all()
@@ -56,8 +54,8 @@ class DishModelForm(forms.ModelForm):
                 widget=forms.NumberInput(attrs={
                     'class': 'form-control'
                 }))
-            # self.initial[field_name] = 0
 
+class DishModelForm(AbstractSellableModelForm):
     class Meta:
         model = Dish
         fields = ('name', 'partition')
@@ -106,4 +104,12 @@ class UserCreationForm(BaseUserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
         labels = {
             'username': "Nom d'utilisateur du caissier"
+        }
+
+class DrinkModelForm(AbstractSellableModelForm):
+    class Meta:
+        model = Drink
+        fields = ('name', )
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
         }

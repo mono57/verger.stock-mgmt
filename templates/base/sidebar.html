@@ -1,6 +1,7 @@
  {% url 'backoffice:home' as dashboard_url %}
  {% url 'backoffice:dish-add' as dish_add_url %}
  {% url 'backoffice:buying-add' as buying_add_url %}
+ {% url 'backoffice:drink-add' as drink_add_url %}
 
 {% with is_superuser=request.user.is_superuser %}
 
@@ -32,7 +33,7 @@
              </li>
 
              <li class="nav-item">
-                 <a class="nav-link " href="#">
+                 <a class="nav-link " href="{{drink_add_url}}">
                      <span data-feather="plus"></span>
                      Ajouter une boisson
                  </a>

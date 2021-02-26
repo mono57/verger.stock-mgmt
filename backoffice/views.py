@@ -14,7 +14,7 @@ from backoffice.models import Buying, BuyingEntry, Portion, Product, Room, Price
 from backoffice.forms import (
     BuyingEntryModelForm,
     BuyingModelForm,
-    DishModelForm, ProductModelForm, RoomModelForm, UserCreationForm)
+    DishModelForm, DrinkModelForm, ProductModelForm, RoomModelForm, UserCreationForm)
 
 
 User = get_user_model()
@@ -66,15 +66,13 @@ class RoomUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return reverse('backoffice:room_update', kwargs={'pk': self.get_object().pk})
 
 
-class DishCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = 'backoffice/dish_form.html'
-    form_class = DishModelForm
-    success_url = reverse_lazy('backoffice:dish-add')
-    success_message = 'Nouveau plat defini avec succès'
-
+class AbstractSellableCreateView(
+    LoginRequiredMixin, 
+    SuccessMessageMixin, 
+    CreateView):
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
-        dish_obj = form.save()
+        obj = form.save()
         price_fields_names = filter(
             lambda val: 'price' in val, cleaned_data.keys())
         for price_field_name in price_fields_names:
@@ -82,9 +80,29 @@ class DishCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
                 price=cleaned_data.get(price_field_name),
                 room=get_object_or_404(
                     Room, pk=price_field_name.split('_')[2]),
-                content_object=dish_obj
+                content_object=obj
             )
         return super().form_valid(form)
+
+class DishCreateView(AbstractSellableCreateView):
+    template_name = 'backoffice/dish_form.html'
+    form_class = DishModelForm
+    success_url = reverse_lazy('backoffice:dish-add')
+    success_message = 'Nouveau plat defini avec succès'
+
+    # def form_valid(self, form):
+    #     cleaned_data = form.cleaned_data
+    #     dish_obj = form.save()
+    #     price_fields_names = filter(
+    #         lambda val: 'price' in val, cleaned_data.keys())
+    #     for price_field_name in price_fields_names:
+    #         Price.objects.create(
+    #             price=cleaned_data.get(price_field_name),
+    #             room=get_object_or_404(
+    #                 Room, pk=price_field_name.split('_')[2]),
+    #             content_object=dish_obj
+    #         )
+    #     return super().form_valid(form)
 
 
 class BuyingCreateView(LoginRequiredMixin, CreateView):
@@ -174,6 +192,16 @@ class UserActivateDeactivateView(LoginRequiredMixin, View):
 
         self.get_success_message(name=user, action=action)
         return redirect('backoffice:user-list')
+
+class DrinkCreateView(AbstractSellableCreateView):
+    template_name = 'backoffice/drink_form.html'
+    form_class = DrinkModelForm
+    success_message = 'Boisson ajoutée avec succès'
+    success_url = reverse_lazy('backoffice:drink-add')
+
+
+
+
 
 def state_sale(request):
 
