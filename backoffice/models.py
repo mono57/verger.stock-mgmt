@@ -1,6 +1,8 @@
 from django.db import models
-from django.contrib.auth import get_user, get_user_model
+from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db.models.base import ModelState
 from django_extensions.db.models import TimeStampedModel
 
@@ -84,6 +86,16 @@ class Portion(TimeStampedModel):
         null=True)
 
 
+class Drink(TimeStampedModel):
+    name = models.CharField(max_length=100, verbose_name='Nom de la boisson')
+
+    class Meta:
+        verbose_name = 'Boisson'
+        verbose_name_plural = 'Boissons'
+
+    def __str__(self):
+        return self.name
+
 class Dish(TimeStampedModel):
     name = models.CharField(
         max_length=250,
@@ -108,8 +120,11 @@ class Price(TimeStampedModel):
     price = models.IntegerField()
     room = models.ForeignKey(
         Room, on_delete=models.DO_NOTHING, related_name='room_prices')
-    dish = models.ForeignKey(
-        Dish, on_delete=models.DO_NOTHING, related_name='dish_prices')
+    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.CASCADE)
+    content_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey('content_type', 'content_id')
+    # dish = models.ForeignKey(
+    #     Dish, on_delete=models.DO_NOTHING, related_name='dish_prices')
 
     class Meta:
         verbose_name = 'Prix'
@@ -153,11 +168,13 @@ class InvoiceEntry(TimeStampedModel):
         Invoice,
         on_delete=models.DO_NOTHING,
         related_name='invoices')
-    plat = models.ForeignKey(
-        Dish,
-        on_delete=models.DO_NOTHING,
-        related_name='invoices_plat')
-
+    
+    content_type = models.ForeignKey(
+        ContentType, 
+        null=True, 
+        on_delete=models.CASCADE)
+    content_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey('content_type', 'content_id')
     quantity = models.IntegerField(verbose_name='Quantité achetée')
     price = models.IntegerField()
 

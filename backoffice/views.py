@@ -82,7 +82,7 @@ class DishCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
                 price=cleaned_data.get(price_field_name),
                 room=get_object_or_404(
                     Room, pk=price_field_name.split('_')[2]),
-                dish=dish_obj
+                content_object=dish_obj
             )
         return super().form_valid(form)
 
