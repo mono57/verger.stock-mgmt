@@ -2,14 +2,18 @@
  {% url 'backoffice:dish-add' as dish_add_url %}
  {% url 'backoffice:buying-add' as buying_add_url %}
 
+{% with is_superuser=request.user.is_superuser %}
+
+
+
  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
      <div class="position-sticky">
-         <ul class="nav flex-column my-2">
+         <ul class="nav flex-column mt-4 mb-2">
 
              <li class="nav-item">
                  <a class="nav-link {% if request.path == dashboard_url %}active{% endif %}" aria-current="page"
                      href="{{dashboard_url}}">
-                     <span data-feather="home"></span>
+                     <span data-feather="activity"></span>
                      TABLEAU DE BORD
                  </a>
              </li>
@@ -22,25 +26,26 @@
              <li class="nav-item">
                  <a class="nav-link {% if request.path == dish_add_url %} active{% endif %}" aria-current="page"
                      href="{{dish_add_url}}">
-                     <span data-feather="home"></span>
+                     <span data-feather="plus"></span>
                      Ajout un plat au menu
                  </a>
              </li>
 
              <li class="nav-item">
                  <a class="nav-link " href="#">
-                     <span data-feather="file"></span>
+                     <span data-feather="plus"></span>
                      Ajouter une boisson
                  </a>
              </li>
              <li class="nav-item">
                  <a class="nav-link" href="#">
-                     <span data-feather="file"></span>
-                     Mon menu
+                     <span data-feather="grid"></span>
+                     Le Menu
                  </a>
              </li>
 
          </ul>
+         {% if is_superuser %}
          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
              <span>Achats</span>
 
@@ -49,18 +54,19 @@
 
              <li class="nav-item">
                  <a class="nav-link {% if request.path == buying_add_url %} active{% endif %}" aria-current="page" href="{{buying_add_url}}">
-                     <span data-feather="home"></span>
+                     <span data-feather="shopping-cart"></span>
                      Nouvel achat
                  </a>
              </li>
              <li class="nav-item">
                  <a class="nav-link" href="#">
-                     <span data-feather="file"></span>
+                     <span data-feather="list"></span>
                      Liste des achats
                  </a>
              </li>
 
          </ul>
+         {% endif %}
          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
              <span>Ventes</span>
 
@@ -69,20 +75,20 @@
 
              <li class="nav-item">
                  <a class="nav-link" aria-current="page" href="#">
-                     <span data-feather="home"></span>
+                     <span data-feather="plus"></span>
                      Nouvelle facture
                  </a>
              </li>
              <li class="nav-item">
                  <a class="nav-link" href="#">
-                     <span data-feather="file"></span>
+                     <span data-feather="dollar-sign"></span>
                      Factures
                  </a>
              </li>
 
              <li class="nav-item">
                  <a class="nav-link" href="#">
-                     <span data-feather="file"></span>
+                     <span data-feather="bar-chart-2"></span>
                      Etat de ventes
                  </a>
              </li>
@@ -92,3 +98,5 @@
 
      </div>
  </nav>
+
+ {% endwith %}
