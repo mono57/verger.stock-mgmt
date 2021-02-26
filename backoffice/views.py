@@ -7,8 +7,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
-from backoffice.models import Product, Room, Price
-from backoffice.forms import DishModelForm, ProductModelForm, RoomModelForm
+from backoffice.models import Buying, BuyingEntry, Portion, Product, Room, Price
+from backoffice.forms import BuyingEntryModelForm, BuyingModelForm, DishModelForm, ProductModelForm, RoomModelForm
 
 
 class DashboardTemplateView(LoginRequiredMixin, TemplateView):
@@ -27,10 +27,13 @@ class ProductCreateView(
         context['products'] = Product.objects.all()
         return context
 
+
 class ProductListView(LoginRequiredMixin, ListView):
     template_name = 'backoffice/product_list.html'
     model = Product
     context_object_name = 'products'
+
+
 class RoomCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'backoffice/room_form.html'
     form_class = RoomModelForm
@@ -63,13 +66,68 @@ class DishCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         cleaned_data = form.cleaned_data
         dish_obj = form.save()
-        price_fields_names = filter(lambda val: 'price' in val, cleaned_data.keys())
+        price_fields_names = filter(
+            lambda val: 'price' in val, cleaned_data.keys())
         for price_field_name in price_fields_names:
             Price.objects.create(
                 price=cleaned_data.get(price_field_name),
-                room=get_object_or_404(Room, pk=price_field_name.split('_')[2]),
+                room=get_object_or_404(
+                    Room, pk=price_field_name.split('_')[2]),
                 dish=dish_obj
             )
         return super().form_valid(form)
 
+
+class BuyingCreateView(LoginRequiredMixin, CreateView):
+    template_name = 'backoffice/buying_form.html'
+    form_class = BuyingModelForm
+
+    def get_success_url(self) -> str:
+        return reverse(
+            'backoffice:buying-product-add',
+            kwargs={'buying_pk': self.buying_pk})
+
+    def form_valid(self, form):
+        obj = form.save()
+        self.buying_pk = obj.pk
+        return super().form_valid(form)
+
+
+class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = 'backoffice/buying-entry_form.html'
+    form_class = BuyingEntryModelForm
+    success_message = 'Produit ajouté'
+
+    def get_success_url(self) -> str:
+        return reverse(
+            'backoffice:buying-product-add', 
+            kwargs={'buying_pk': self.kwargs.get('buying_pk')})
+
+    def get_buying_object(self):
+        return get_object_or_404(
+            Buying, 
+            pk=self.kwargs.get('buying_pk'))
+
+    def form_valid(self, form):
+        buying = self.get_buying_object()
+        obj = form.save(commit=False)
+        obj.buying = buying
+        obj.save()
+
+        if obj.product.is_portionable:
+            partition = obj.partition
+            stock = partition.compute_stock_quantity(obj.quantity)
+            Portion.objects.create(
+                stock_store=stock,
+                partition=partition)
+        else:   
+            stock = obj.quantity
+            Portion.objects.create(
+                stock_store=stock)
         
+        return super().form_valid(form)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['buying'] = self.get_buying_object()
+        return context

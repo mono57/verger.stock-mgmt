@@ -1,5 +1,6 @@
  {% url 'backoffice:home' as dashboard_url %}
  {% url 'backoffice:dish-add' as dish_add_url %}
+ {% url 'backoffice:buying-add' as buying_add_url %}
 
  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
      <div class="position-sticky">
@@ -27,7 +28,7 @@
              </li>
 
              <li class="nav-item">
-                 <a class="nav-link" href="#">
+                 <a class="nav-link " href="#">
                      <span data-feather="file"></span>
                      Ajouter une boisson
                  </a>
@@ -47,7 +48,7 @@
          <ul class="nav flex-column">
 
              <li class="nav-item">
-                 <a class="nav-link" aria-current="page" href="#">
+                 <a class="nav-link {% if request.path == buying_add_url %} active{% endif %}" aria-current="page" href="{{buying_add_url}}">
                      <span data-feather="home"></span>
                      Nouvel achat
                  </a>

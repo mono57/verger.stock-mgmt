@@ -35,7 +35,10 @@ class PartitionFormulla(models.Model):
         verbose_name_plural = 'Formules de partition'
 
     def __str__(self):
-        return self.cooking_type
+        return self.cooking_type + '(' + str(self.input) + 'x' + str(self.output) + ')'
+
+    def compute_stock_quantity(self, buying_qty):
+        return buying_qty * self.output / self.input
 
 
 class Product(models.Model):
@@ -72,10 +75,13 @@ class Product(models.Model):
 
 
 class Portion(models.Model):
-    store = models.IntegerField(default=0)
+    stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
     partition = models.ForeignKey(
-        PartitionFormulla, on_delete=models.DO_NOTHING)
+        PartitionFormulla,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True)
 
 
 class Dish(models.Model):
@@ -158,6 +164,13 @@ class InvoiceEntry(models.Model):
 
 class Buying(models.Model):
     date = models.DateField(default=timezone.now)
+    total_amount = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Montant total de l\'achat')
+
+    def format_total_amount(self):
+        return str(self.total_amount) + ' F CFA' if self.total_amount else None
 
     class Meta:
         verbose_name = 'Achat'
@@ -165,6 +178,13 @@ class Buying(models.Model):
 
 
 class BuyingEntry(models.Model):
-    buying = models.ForeignKey(Buying, on_delete=models.DO_NOTHING)
+    buying = models.ForeignKey(
+        Buying, on_delete=models.DO_NOTHING, related_name='entries')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(verbose_name='Quantité achetée')
+    partition = models.ForeignKey(
+        PartitionFormulla,
+        help_text='Choisir la formule de partition a appliquée sur ce cette quantité',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)

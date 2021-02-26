@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="col-6">
+
+    {% if messages %}
+    {% include "backoffice/includes/message.html" %}
+    {% endif %}
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Ajouter les produits achetés</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for input in form %}
+        <div class="mb-3">
+            <label for="{{input.name}}">{{input.label}}</label>
+            {{input}}
+            {% if input.help_text %}
+            <p class="text-muted mb-0">{{input.help_text}}</p>
+            {% endif %}
+            {{input.errors}}
+        </div>
+        
+        {% endfor %}
+        <button class="btn btn-dark" type="submit">Ajouter</button>
+
+    </form>
+
+</div>
+
+<div class="col-6">
+    <h1 class="h5 lead">Achat du : <span class="text-light bg-dark">{{buying.date}}</span></h1>
+    <h1 class="h5 lead">Montant total : <span class="text-light bg-dark">{{buying.format_total_amount|default:'Non defini'}}</span>
+    </h1>
+    <h1 class="h5 lead">Produits achetés</h1>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Nom du produit</th>
+                    <th>Quantité</th>
+                    <th>Partition</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in buying.entries.all %}
+                <tr>
+                    <td>{{entry.product}}</td>
+                    <td>{{entry.quantity}}</td>
+                    <td>{{entry.partition|default:""}}</td>
+                    <td>
+                        <a href="">Modifier</a>
+                        <a href="" class="text-danger">Supprimer</a>
+                    </td>
+                    
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Aucun produit</td>
+                </tr>
+                {% endfor %}
+
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock content %}
