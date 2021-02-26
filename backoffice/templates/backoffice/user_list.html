@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block extrastyles %}
+
+    <style>
+    
+        input[type=submit] {
+            background: none;
+            border: 0;
+            padding: 0;
+            color: #016FE6;
+        }
+    </style>
+
+{% endblock extrastyles %}
+
+{% block content %}
+
+<div class="col-6">
+
+    {% if messages %}
+    {% include "backoffice/includes/message.html" %}
+    {% endif %}
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Liste des caissiers</h1>
+        <a href="{% url 'backoffice:user-add' %}">Ajouter un nouveau caissier</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom du caissier</th>
+                    <th>Statut</th>
+                    <th>Date d'ajout</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{user.username}}</td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge bg-success">
+                            actif
+                        </span>
+                        {% else %}
+                        <span class="badge bg-warning">
+                            inactif
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>{{user.date_joined|date}}</td>
+                    <td>
+                        <form action="{% url 'backoffice:activate_deactivate-user' %}" method="get">
+                            <input type="hidden" name="username" value="{{user}}">
+                            {% if user.is_active %}
+                            <input type="hidden" name="action" value="deactivate" class="text-primary">
+                            <input type="submit" value="Désactiviter">
+                            {% else %}
+                            <input type="hidden" name="action" value="activate">
+                            <input type="submit" value="Activer">
+                            
+                            {% endif %}
+                        </form>
+                        <a href="" class="text-danger">Supprimer</a>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Aucun produit</td>
+                </tr>
+                {% endfor %}
+
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock content %}
