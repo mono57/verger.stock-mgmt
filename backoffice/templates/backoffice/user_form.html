@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+
+<div class="col-6">
+
+    {% if messages %}
+    {% include "backoffice/includes/message.html" %}
+    {% endif %}
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Ajouter le caissier</h1>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {% for input in form %}
+        <div class="mb-3">
+            <label for="{{input.name}}">{{input.label}}</label>
+            <input type="{{input.field.widget.input_type}}" class="form-control" name="{{input.name}}" value="{{input.value|default:''}}">
+            {% if input.help_text %}
+            <p class="mb-0 text-muted">{{input.help_text}}</p>
+            {% endif %}
+            {{input.errors}}
+        </div>
+        {% endfor %}
+        <button class="btn btn-dark btn-sm" type="submit">Ajouter</button>
+
+    </form>
+    
+</div>
+
+{% endblock content %}

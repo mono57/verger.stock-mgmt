@@ -1,14 +1,23 @@
-from django.shortcuts import get_object_or_404, render
+from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
-from django.views.generic.base import TemplateView
+from django.contrib import messages
+from django.views.generic.base import TemplateView, View
 from django.views.generic import CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
 from backoffice.models import Buying, BuyingEntry, Portion, Product, Room, Price
-from backoffice.forms import BuyingEntryModelForm, BuyingModelForm, DishModelForm, ProductModelForm, RoomModelForm
+from backoffice.forms import (
+    BuyingEntryModelForm,
+    BuyingModelForm,
+    DishModelForm, ProductModelForm, RoomModelForm, UserCreationForm)
+
+
+User = get_user_model()
 
 
 class DashboardTemplateView(LoginRequiredMixin, TemplateView):
@@ -100,12 +109,12 @@ class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 
     def get_success_url(self) -> str:
         return reverse(
-            'backoffice:buying-product-add', 
+            'backoffice:buying-product-add',
             kwargs={'buying_pk': self.kwargs.get('buying_pk')})
 
     def get_buying_object(self):
         return get_object_or_404(
-            Buying, 
+            Buying,
             pk=self.kwargs.get('buying_pk'))
 
     def form_valid(self, form):
@@ -120,14 +129,48 @@ class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
             Portion.objects.create(
                 stock_store=stock,
                 partition=partition)
-        else:   
+        else:
             stock = obj.quantity
             Portion.objects.create(
                 stock_store=stock)
-        
+
         return super().form_valid(form)
-        
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['buying'] = self.get_buying_object()
         return context
+
+
+class UserCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = 'backoffice/user_form.html'
+    form_class = UserCreationForm
+    success_message = 'Caissier crée avec succès'
+    success_url = reverse_lazy('backoffice:user-list')
+
+
+class UserListView(LoginRequiredMixin, ListView):
+    template_name = 'backoffice/user_list.html'
+    context_object_name = 'users'
+    model = User
+
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(is_superuser=False).order_by('-date_joined')
+
+
+class UserActivateDeactivateView(LoginRequiredMixin, View):
+
+    def get_success_message(self, name, action):
+        template = 'Le caissier {} a été {} avec succès'.format(name,
+            "désactive" if action == 'deactivate' else 'activé')
+        messages.info(self.request, template)
+
+    def get(self, *args, **kwargs):
+        username = self.request.GET.get('username')
+        action = self.request.GET.get('action')
+        user = get_object_or_404(User, username=username)
+        user.is_active = False if action == 'deactivate' else True
+        user.save()
+
+        self.get_success_message(name=user, action=action)
+        return redirect('backoffice:user-list')

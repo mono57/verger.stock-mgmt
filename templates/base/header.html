@@ -3,6 +3,10 @@
 {% url 'backoffice:room-list' as room_list_url %}
 {% url 'backoffice:product-add' as product_add_url %}
 {% url 'backoffice:product-list' as product_list_url %}
+{% url 'backoffice:user-add' as user_add_url %}
+{% url 'backoffice:user-list' as user_list_url %}
+
+{% with is_superuser=request.user.is_superuser %}
 
 <nav class="navbar navbar-expand-lg sticky-top navbar-light flex-md-nowrap bg-light"
   style="border-bottom: 0.1rem solid #dedfe0">
@@ -13,7 +17,11 @@
 
     <div class="container">
       <ul class="navbar-nav pl-4 me-auto mb-2 mb-lg-0 ml-auto" style="margin-left:6.2rem">
-
+        {% if is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link text-primary" href=""> Transfert</a>
+        </li>
+        {% endif %}
         <li class="nav-item dropdown d-inline">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
@@ -21,24 +29,28 @@
               Restaurant</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% if is_superuser %}
             <li><a class="dropdown-item" href="{{room_add_url}}">Ajouter une salle de vente</a></li>
-            <li><a class="dropdown-item" href="{{room_list_url}}">Les salles de ventes</a></li>
             <li><a class="dropdown-item" href="{{product_add_url}}">Ajouter un produit</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{{product_list_url}}">Tous le produits</a></li>
+            <li><a class="dropdown-item" href="{{room_list_url}}">Les salles de ventes</a></li>
+
           </ul>
         </li>
+        {% if is_superuser %}
         <li class="nav-item dropdown d-inline">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             <span class="text-dark">
-              Gérer les utilisateurs</span>
+              Gérer les caissiers</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Ajouter un caissier</a></li>
-            <li><a class="dropdown-item" href="#">Liste des utilisateurs</a></li>
+            <li><a class="dropdown-item" href="{{user_add_url}}">Ajouter un caissier</a></li>
+            <li><a class="dropdown-item" href="{{user_list_url}}">Liste des caissiers</a></li>
           </ul>
-        </li>
-        <li class="nab-item">
+        </li> {% endif %}
+        <li class="nav-item">
           <span class="nav-link"> Connecté en tant que</span>
         </li>
         <li class="nav-item dropdown d-inline">
@@ -60,3 +72,4 @@
 
   </div>
 </nav>
+{% endwith %}
