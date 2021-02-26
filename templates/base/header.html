@@ -26,13 +26,14 @@
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             <span class="text-dark">
-              Restaurant</span>
+              Operation</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% if is_superuser %}
             <li><a class="dropdown-item" href="{{room_add_url}}">Ajouter une salle de vente</a></li>
             <li><a class="dropdown-item" href="{{product_add_url}}">Ajouter un produit</a></li>
             {% endif %}
+            <li><a class="dropdown-item" href="">Etat de stock</a></li>
             <li><a class="dropdown-item" href="{{product_list_url}}">Tous le produits</a></li>
             <li><a class="dropdown-item" href="{{room_list_url}}">Les salles de ventes</a></li>
 
