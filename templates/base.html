@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% include "base/css.html" %}
+    {% block extrastyles %}
+    
+    {% endblock extrastyles %}
     <title>
     </title>
 </head>
@@ -38,13 +41,14 @@
 
 
                 </div>
+            {% comment %} {% include "base/footer.html" %} {% endcomment %}
+
             </main>
 
         </div>
 
     </div>
 
-    {% include "base/footer.html" %}
 
     {% include "base/js.html" %}
 

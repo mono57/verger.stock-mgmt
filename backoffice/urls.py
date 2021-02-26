@@ -2,7 +2,7 @@ from django.urls import path
 from backoffice.views import (
     BuyingCreateView, BuyingEntryCreateView, DishCreateView, ProductCreateView, 
     DashboardTemplateView, ProductListView, 
-    RoomCreateView, RoomListView, RoomUpdateView)
+    RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, UserCreateView, UserListView)
 
 app_name = 'backoffice'
 
@@ -15,6 +15,12 @@ urlpatterns = [
     path('room/<int:pk>/update/', RoomUpdateView.as_view(), name="room-update"),
     path('dish/add/', DishCreateView.as_view(), name='dish-add'),
     path('buying/add/', BuyingCreateView.as_view(), name='buying-add'),
+    path('user/add/', UserCreateView.as_view(), name='user-add'),
+    path('user/list/', UserListView.as_view(), name='user-list'),
+    path(
+        'user/activate/deactivate/', 
+        UserActivateDeactivateView.as_view(), 
+        name='activate_deactivate-user'),
     path(
         'buying/<int:buying_pk>/product/add/', 
         BuyingEntryCreateView.as_view(), 

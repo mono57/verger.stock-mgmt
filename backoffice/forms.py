@@ -1,9 +1,11 @@
 from django.utils import timezone
 from django import forms
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from backoffice.models import Buying, BuyingEntry, Dish, PartitionFormulla, Product, Room
 
 
+User = get_user_model()
 class ProductModelForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -92,3 +94,15 @@ class BuyingEntryModelForm(forms.ModelForm):
             raise forms.ValidationError(
                 'Vous devez choisir la formule de partition a appliquée sur la quantité achetée')
         return partition
+
+class UserCreationForm(BaseUserCreationForm):
+    email = forms.EmailField(
+        required=False,
+        label='Adresse email')
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+        labels = {
+            'username': "Nom d'utilisateur du caissier"
+        }
