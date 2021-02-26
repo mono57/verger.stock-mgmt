@@ -2,12 +2,12 @@ from django.db import models
 from django.contrib.auth import get_user, get_user_model
 from django.utils import timezone
 from django.db.models.base import ModelState
-
+from django_extensions.db.models import TimeStampedModel
 
 User = get_user_model()
 
 
-class Room(models.Model):
+class Room(TimeStampedModel):
     name = models.CharField(
         max_length=150,
         verbose_name="Nom de la salle")
@@ -20,7 +20,7 @@ class Room(models.Model):
         return self.name
 
 
-class PartitionFormulla(models.Model):
+class PartitionFormulla(TimeStampedModel):
     cooking_type = models.CharField(
         max_length=100,
         verbose_name='Type de préparation'
@@ -41,7 +41,7 @@ class PartitionFormulla(models.Model):
         return buying_qty * self.output / self.input
 
 
-class Product(models.Model):
+class Product(TimeStampedModel):
     class ProductCategory(models.TextChoices):
         PORTIONABLE = "P", "Portionable"
         UNPORTIONABLE = "UP", "Non Portionable"
@@ -74,7 +74,7 @@ class Product(models.Model):
         return self.name
 
 
-class Portion(models.Model):
+class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
     partition = models.ForeignKey(
@@ -84,7 +84,7 @@ class Portion(models.Model):
         null=True)
 
 
-class Dish(models.Model):
+class Dish(TimeStampedModel):
     name = models.CharField(
         max_length=250,
         verbose_name="Nom du plat")
@@ -104,7 +104,7 @@ class Dish(models.Model):
         return self.name
 
 
-class Price(models.Model):
+class Price(TimeStampedModel):
     price = models.IntegerField()
     room = models.ForeignKey(
         Room, on_delete=models.DO_NOTHING, related_name='room_prices')
@@ -119,7 +119,7 @@ class Price(models.Model):
         return str(self.price)
 
 
-class Invoice(models.Model):
+class Invoice(TimeStampedModel):
     paymaster = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
@@ -148,7 +148,7 @@ class Invoice(models.Model):
         return "{:6d}".format(self.pk)
 
 
-class InvoiceEntry(models.Model):
+class InvoiceEntry(TimeStampedModel):
     invoice = models.ForeignKey(
         Invoice,
         on_delete=models.DO_NOTHING,
@@ -162,7 +162,7 @@ class InvoiceEntry(models.Model):
     price = models.IntegerField()
 
 
-class Buying(models.Model):
+class Buying(TimeStampedModel):
     date = models.DateField(default=timezone.now)
     total_amount = models.IntegerField(
         blank=True,
@@ -177,7 +177,7 @@ class Buying(models.Model):
         verbose_name_plural = 'Achats'
 
 
-class BuyingEntry(models.Model):
+class BuyingEntry(TimeStampedModel):
     buying = models.ForeignKey(
         Buying, on_delete=models.DO_NOTHING, related_name='entries')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
