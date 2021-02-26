@@ -9,9 +9,10 @@ User = get_user_model()
 class ProductModelForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ('name', 'category', 'partition')
+        fields = ('name', 'product_type', 'category', 'partition')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'product_type': forms.Select(attrs={'class': 'form-select'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'partition': forms.SelectMultiple(attrs={'class': 'form-select'}),
         }

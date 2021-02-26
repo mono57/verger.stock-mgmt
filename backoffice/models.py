@@ -41,6 +41,12 @@ class PartitionFormulla(TimeStampedModel):
         return buying_qty * self.output / self.input
 
 
+class ProductType(TimeStampedModel):
+    name = models.CharField(
+        max_length=250,
+        verbose_name="Type de produit")
+
+
 class Product(TimeStampedModel):
     class ProductCategory(models.TextChoices):
         PORTIONABLE = "P", "Portionable"
@@ -61,6 +67,14 @@ class Product(TimeStampedModel):
         blank=True,
         verbose_name='Types de préparation qu\'on peut faire avec ce produit',
         help_text='Appuyez sur Shift pour selectionner plusieurs')
+    
+    product_type = models.ForeignKey(
+        ProductType,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        verbose_name="Type de produit"
+    )
 
     @property
     def is_portionable(self):
@@ -72,7 +86,6 @@ class Product(TimeStampedModel):
 
     def __str__(self):
         return self.name
-
 
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
