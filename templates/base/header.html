@@ -11,7 +11,7 @@
 <nav class="navbar navbar-expand-lg sticky-top navbar-light flex-md-nowrap bg-light"
   style="border-bottom: 0.1rem solid #dedfe0">
   <div class="container-fluid">
-    <h1 class="h3">Verger</h1>
+    <a href="{% url 'backoffice:home' %}" class="h3 text-decoration-none text-dark">Verger</a>
 
     {% if request.user.is_authenticated %}
 
