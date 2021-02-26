@@ -1,7 +1,8 @@
+from django.utils import timezone
 from django import forms
-from django.forms import widgets
 
-from backoffice.models import Dish, Product, Room
+from backoffice.models import Buying, BuyingEntry, Dish, PartitionFormulla, Product, Room
+
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -17,7 +18,7 @@ class ProductModelForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         qs = Product.objects.filter(name=name)
         if qs.exists():
-            raise forms.ValidationError('Un produit de même existe déjà !') 
+            raise forms.ValidationError('Un produit de même existe déjà !')
         return name
 
 
@@ -37,6 +38,7 @@ class RoomModelForm(forms.ModelForm):
 
         return name
 
+
 class DishModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -52,16 +54,41 @@ class DishModelForm(forms.ModelForm):
                     'class': 'form-control'
                 }))
             # self.initial[field_name] = 0
+
     class Meta:
         model = Dish
         fields = ('name', 'partition')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'partition': forms.Select(attrs={'class': 'form-control'}),
+            'partition': forms.Select(attrs={'class': 'form-select'}),
         }
 
-    # def clean_partition(self):
-    #     partition = self.cleaned_data.get('partition')
-    #     if partition is None:
-    #         raise forms.ValidationError('Renseigner une formule de partiton')
-    #     return partition
+
+class BuyingModelForm(forms.ModelForm):
+    class Meta:
+        model = Buying
+        fields = '__all__'
+        widgets = {
+            'total_amount': forms.NumberInput(
+                attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
+
+
+class BuyingEntryModelForm(forms.ModelForm):
+    class Meta:
+        model = BuyingEntry
+        fields = ('product', 'quantity', 'partition')
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-select'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'partition': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def clean_partition(self):
+        product = self.cleaned_data.get('product')
+        partition = self.cleaned_data.get('partition')
+        if product.is_portionable and not partition:
+            raise forms.ValidationError(
+                'Vous devez choisir la formule de partition a appliquée sur la quantité achetée')
+        return partition
