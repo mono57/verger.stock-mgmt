@@ -108,7 +108,7 @@ class Product(TimeStampedModel):
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
-    partition = models.ForeignKey(
+    partition = models.OneToOneField(
         PartitionFormulla,
         on_delete=models.DO_NOTHING,
         blank=True,
