@@ -47,6 +47,9 @@ class ProductType(TimeStampedModel):
     name = models.CharField(
         max_length=250,
         verbose_name="Type de produit")
+    
+    def __str__(self) -> str:
+        return self.name
 
 
 class Product(TimeStampedModel):
@@ -88,6 +91,7 @@ class Product(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
 
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
