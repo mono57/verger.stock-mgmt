@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -40,7 +41,13 @@ class PartitionFormulla(TimeStampedModel):
         return self.cooking_type + '(' + str(self.input) + 'x' + str(self.output) + ')'
 
     def compute_stock_quantity(self, buying_qty):
-        return buying_qty * self.output / self.input
+        stock_quantity = buying_qty * self.output / float(self.input)
+        decimal_part = stock_quantity-int(stock_quantity)
+        if decimal_part <= 5:
+            stock_quantity =  math.floor(stock_quantity)
+        else:
+            stock_quantity =  math.ceil(stock_quantity)
+        return int(stock_quantity)
 
 
 class ProductType(TimeStampedModel):
@@ -222,3 +229,4 @@ class BuyingEntry(TimeStampedModel):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+
