@@ -125,13 +125,16 @@ class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 
         if obj.product.is_portionable:
             partition = obj.partition
+            # print("Formule ", partition)
             stock = partition.compute_stock_quantity(obj.quantity)
             p, created  = Portion.objects.get_or_create(partition=partition)
+            # print("p, created", p, created)
             if created:
                 p.stock_store=stock
                 p.partition=partition
             else:
                 p.stock_store += stock
+            p.save()
         else:
             stock = obj.quantity
             p, created = Portion.objects.get_or_create(partition=partition)
@@ -140,6 +143,7 @@ class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
                 p.partition=obj.partition
             else:
                 p.stock_store += stock
+            p.save()
 
         return super().form_valid(form)
 

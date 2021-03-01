@@ -41,12 +41,17 @@ class PartitionFormulla(TimeStampedModel):
         return self.cooking_type + '(' + str(self.input) + 'x' + str(self.output) + ')'
 
     def compute_stock_quantity(self, buying_qty):
-        stock_quantity = buying_qty * self.output / float(self.input)
-        decimal_part = stock_quantity-int(stock_quantity)
+        stock_quantity = buying_qty * (self.output / float(self.input))
+        decimal_part = int(str(stock_quantity-int(stock_quantity))[2:3])
+
+        # print("Stock qtté: ", stock_quantity, type(stock_quantity))
+        # print("Decimal part: ", decimal_part, type(decimal_part))
+
         if decimal_part <= 5:
             stock_quantity =  math.floor(stock_quantity)
         else:
             stock_quantity =  math.ceil(stock_quantity)
+        # print("Stock qtté: ", stock_quantity, type(stock_quantity))
         return int(stock_quantity)
 
 
@@ -229,4 +234,8 @@ class BuyingEntry(TimeStampedModel):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+
+
+class Transfert(TimeStampedModel):
+    portion = models.ForeignKey(Portion, on_delete=models.DO_NOTHING)
 
