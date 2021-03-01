@@ -36,7 +36,6 @@ class ProductCreateView(
         context['products'] = Product.objects.all()
         return context
 
-
 class ProductListView(LoginRequiredMixin, ListView):
     template_name = 'backoffice/product_list.html'
     model = Product
@@ -189,3 +188,13 @@ class UserActivateDeactivateView(LoginRequiredMixin, View):
 def state_sale(request):
 
     return render(request,'backoffice/state_sale.html')
+
+
+
+def transfert_portion(request):
+    if request.method == 'POST':
+        pass
+
+    return render(request, 'backoffice/transfert_portion.html', {
+
+    })

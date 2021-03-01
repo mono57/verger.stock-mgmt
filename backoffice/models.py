@@ -79,11 +79,12 @@ class Product(TimeStampedModel):
         default=ProductCategory.PORTIONABLE,
         verbose_name="Categorie du produit")
 
-    partition = models.ManyToManyField(
+    partition = models.ForeignKey(
         PartitionFormulla,
         blank=True,
-        verbose_name='Types de préparation qu\'on peut faire avec ce produit',
-        help_text='Appuyez sur Shift pour selectionner plusieurs')
+        verbose_name='Type de préparation qu\'on peut faire avec ce produit',
+        help_text='Appuyez sur Shift pour selectionner plusieurs',
+        on_delete=models.DO_NOTHING)
     
     product_type = models.ForeignKey(
         ProductType,
