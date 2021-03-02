@@ -9,8 +9,10 @@ from django.views.generic import CreateView, ListView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
+from django.http import JsonResponse
+from django.contrib import messages
 
-from backoffice.models import Buying, BuyingEntry, Portion, Product, Room, Price
+from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price
 from backoffice.forms import (
     BuyingEntryModelForm,
     BuyingModelForm,
@@ -193,8 +195,53 @@ def state_sale(request):
 
 def transfert_portion(request):
     if request.method == 'POST':
-        pass
+        
+        partition_formula_id = request.POST['partitionformula']
+        quantity = request.POST['quantity']
+        if int(partition_formula_id) > 0:
+            partition_formula = PartitionFormulla.objects.get(id=int(partition_formula_id))
+            portion = partition_formula.portion
+            if portion.stock_store >= int(quantity):
+                portion.stock_store -= int(quantity)
+                portion.store += int(quantity)
+                portion.save()
+                partition_formula.save()
+            else:
+                messages.error(request, f"Erreur: la quantité à transférer est supérieure à ce qui est en stock!")
+            messages.success(request, f"Transfert réussi!")
+        else:
+            messages.error(request, f"Erreur: Veuillez choisir une bonne formule")
+
+
+    products = Product.objects.all()
+    partitionformulas = PartitionFormulla.objects.all()
 
     return render(request, 'backoffice/transfert_portion.html', {
-
+        "partitionformulas": partitionformulas,
     })
+
+
+def ajax_get_max_portion_number(request):
+    partition_formula_id = request.GET.get('partitionformula_id', 'None')
+    # print("Partition id:", partition_formula_id)
+    data = {}
+    if partition_formula_id.isdigit():
+        try:
+            partition_formula = PartitionFormulla.objects.get(id=int(partition_formula_id))
+            # print(partition_formula)
+            stock_store = partition_formula.portion.stock_store
+            data = {
+                'finded': True,
+                'stock_store': stock_store
+            }
+        except Exception:
+            print("OK 1")
+            data = {
+                'finded': False,
+            }
+    else:
+        print("OK 2")
+        data = {
+            'finded': False
+        }
+    return JsonResponse(data)

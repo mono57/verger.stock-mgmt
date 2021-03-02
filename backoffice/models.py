@@ -38,7 +38,7 @@ class PartitionFormulla(TimeStampedModel):
         verbose_name_plural = 'Formules de partition'
 
     def __str__(self):
-        return self.cooking_type + '(' + str(self.input) + 'x' + str(self.output) + ')'
+        return self.cooking_type + '(' + str(self.input) + 'Kg/L -> ' + str(self.output) + ' Portion(s))'
 
     def compute_stock_quantity(self, buying_qty):
         stock_quantity = buying_qty * (self.output / float(self.input))
@@ -79,12 +79,11 @@ class Product(TimeStampedModel):
         default=ProductCategory.PORTIONABLE,
         verbose_name="Categorie du produit")
 
-    partition = models.ForeignKey(
+    partition = models.ManyToManyField(
         PartitionFormulla,
         blank=True,
         verbose_name='Type de préparation qu\'on peut faire avec ce produit',
-        help_text='Appuyez sur Shift pour selectionner plusieurs',
-        on_delete=models.DO_NOTHING)
+        help_text='Appuyez sur Shift pour selectionner plusieurs')
     
     product_type = models.ForeignKey(
         ProductType,

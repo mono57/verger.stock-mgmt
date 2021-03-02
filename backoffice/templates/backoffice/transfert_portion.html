@@ -1,43 +1,63 @@
-{% extends "base.html" %} {% block content %}
-<div class="row pt-3">
-    <div class="col-6">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h1 class="h5">Enregistrer un nouveau produit</h1>
-        </div>
-        <form method="post">
-            <input type="hidden" name="csrfmiddlewaretoken" value="WVNLL4X7r5dhz860pDdewJE65fNurIrGIR6gJfRGLHuPaH6UnHbwzdn1UQxfOLpI">
-            <div class="mb-3">
-                <label for="name">Nom du produit</label>
-                <input type="text" name="name" class="form-control" maxlength="150" required="" id="id_name">
+{% extends "base.html" %} 
+
+{% block content %}
+    <div class="row pt-3">
+        <div class="col-6">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h1 class="h5">Transférer un produit à la cuisine</h1>
             </div>
-            <div class="mb-3">
-                <label for="product_type">Type de produit</label>
-                <select name="product_type" class="form-select" id="id_product_type">
-                        <option value="" selected="">---------</option>
-                        <option value="1">Consommable</option>
-                    </select>
-            </div>
-            <div class="mb-3">
-                <label for="category">Categorie du produit</label>
-                <select name="category" class="form-select" id="id_category">
-                        <option value="P" selected="">Portionable</option>
-                        <option value="UP">Non Portionable</option>
-                    </select>
-            </div>
-            <div class="mb-3">
-                <label for="partition">Types de préparation qu'on peut faire avec ce produit</label>
-                <select name="partition" class="form-select" id="id_partition" multiple="">
-                        <option value="1">Formule Viande Steak(50x23)</option>
-                        <option value="2">Formule Poulet(7x12)</option>
-                    </select>
-            </div>
-            <div class="mb-3 d-flex align-items-center">
-                <button class="btn btn-dark" type="submit">Enregistrer</button>
-                <div class="spinner-border text-dark" role="status" style="margin-left:12px; display:none">
-                    <span class="visually-hidden ml-3">Loading...</span>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {% if partitionformulas %}
+                        <label for="partitionformula">Choisir la formule utilisée pour le portionnage</label>
+                        <select name="partitionformula" class="form-select" id="partitionformula">
+                            <option value="-1" selected>--------------------</option>
+                            {% for partitionformula in partitionformulas %}
+                                <option value="{{ partitionformula.id }}">{{ partitionformula }}</option>
+                            {% empty %}
+                                <p>Aucune formule, veuillez en <a href="{% url 'formula-add' %}" class="btn btn-primary">ajouter</a>.</p>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <p>Aucune formule, veuillez en <a href="{% url 'formula-add' %}" class="btn btn-primary">ajouter</a>.</p>
+                    {% endif %}
                 </div>
-            </div>
-        </form>
+                <div class="mb-3">
+                    <label for="quantity">Quantité à transférer</label>
+                    <input type="number" name="quantity" class="form-control" id="quantity" value="0" min="0" max="0">
+                </div>
+
+                <div class="mb-3 d-flex align-items-center">
+                    <button class="btn btn-dark" type="submit">Tranférer</button>
+                </div>
+        </div>
+
+            </form>
+        </div>
     </div>
-</div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#partitionformula").change(function () {
+            var partitionformula_id = $(this).val();
+            $.ajax({
+                url: '{% url "backoffice:ajax_get_max_portion_number" %}',
+                data: {
+                    'partitionformula_id': partitionformula_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.finded) {
+                        // alert("Data finded!");
+                        $("#quantity").attr("min", "0");
+                        $("#quantity").attr("max", String(data.stock_store));
+                    } else {
+                        // alert("Data not finded");
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
