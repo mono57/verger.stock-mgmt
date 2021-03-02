@@ -238,4 +238,5 @@ class BuyingEntry(TimeStampedModel):
 
 class Transfert(TimeStampedModel):
     portion = models.ForeignKey(Portion, on_delete=models.DO_NOTHING)
+    quantity = models.IntegerField(default=0)
 

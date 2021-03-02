@@ -12,7 +12,7 @@ from django.views.generic.edit import UpdateView
 from django.http import JsonResponse
 from django.contrib import messages
 
-from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price
+from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price, Transfert
 from backoffice.forms import (
     BuyingEntryModelForm,
     BuyingModelForm,
@@ -206,6 +206,7 @@ def transfert_portion(request):
                 portion.store += int(quantity)
                 portion.save()
                 partition_formula.save()
+                Transfert(portion=portion, quantity=int(quantity)).save()
             else:
                 messages.error(request, f"Erreur: la quantité à transférer est supérieure à ce qui est en stock!")
             messages.success(request, f"Transfert réussi!")
