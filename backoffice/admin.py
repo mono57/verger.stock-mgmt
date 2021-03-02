@@ -7,7 +7,7 @@ from backoffice.models import (
     Price, 
     Product,
     ProductType,
-    Room)
+    Room, Transfert)
 
 admin.site.register(PartitionFormulla)
 admin.site.register(Product)
@@ -18,4 +18,5 @@ admin.site.register(Buying)
 admin.site.register(BuyingEntry)
 admin.site.register(Portion)
 admin.site.register(ProductType)
+admin.site.register(Transfert)
 # Register your models here.
