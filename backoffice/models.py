@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -37,16 +38,30 @@ class PartitionFormulla(TimeStampedModel):
         verbose_name_plural = 'Formules de partition'
 
     def __str__(self):
-        return self.cooking_type + '(' + str(self.input) + 'x' + str(self.output) + ')'
+        return self.cooking_type + '(' + str(self.input) + 'Kg/L -> ' + str(self.output) + ' Portion(s))'
 
     def compute_stock_quantity(self, buying_qty):
-        return buying_qty * self.output / self.input
+        stock_quantity = buying_qty * (self.output / float(self.input))
+        decimal_part = int(str(stock_quantity-int(stock_quantity))[2:3])
+
+        # print("Stock qtté: ", stock_quantity, type(stock_quantity))
+        # print("Decimal part: ", decimal_part, type(decimal_part))
+
+        if decimal_part <= 5:
+            stock_quantity =  math.floor(stock_quantity)
+        else:
+            stock_quantity =  math.ceil(stock_quantity)
+        # print("Stock qtté: ", stock_quantity, type(stock_quantity))
+        return int(stock_quantity)
 
 
 class ProductType(TimeStampedModel):
     name = models.CharField(
         max_length=250,
         verbose_name="Type de produit")
+    
+    def __str__(self) -> str:
+        return self.name
 
 
 class Product(TimeStampedModel):
@@ -67,7 +82,7 @@ class Product(TimeStampedModel):
     partition = models.ManyToManyField(
         PartitionFormulla,
         blank=True,
-        verbose_name='Types de préparation qu\'on peut faire avec ce produit',
+        verbose_name='Type de préparation qu\'on peut faire avec ce produit',
         help_text='Appuyez sur Shift pour selectionner plusieurs')
     
     product_type = models.ForeignKey(
@@ -89,10 +104,11 @@ class Product(TimeStampedModel):
     def __str__(self):
         return self.name
 
+
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
-    partition = models.ForeignKey(
+    partition = models.OneToOneField(
         PartitionFormulla,
         on_delete=models.DO_NOTHING,
         blank=True,
@@ -218,3 +234,8 @@ class BuyingEntry(TimeStampedModel):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+
+
+class Transfert(TimeStampedModel):
+    portion = models.ForeignKey(Portion, on_delete=models.DO_NOTHING)
+
