@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="d-flex justify-content-between">
+    <div class="col-5">
+
+        {% if messages %}
+        {% include "backoffice/includes/message.html" %}
+        {% endif %}
+
+        <div class="d-flex align-items-center justify-content-between">
+            <h1 class="h5"> Completez la facture </h1>
+
+        </div>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% for input in form %}
+            <div class="mb-3">
+                <label for="{{input.name}}">{{input.label}}</label>
+                {{input}}
+                {% if input.help_text %}
+                <p class="text-muted mb-0">{{input.help_text}}</p>
+                {% endif %}
+                {{input.errors}}
+            </div>
+            {% endfor %}
+
+            <div class="mb-3">
+                <button class="btn btn-block btn-dark btn-sm" type="submit">{{btn_text}}</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="col-6">
+
+        <div class="card p-5 shadow">
+
+            <h1 class="h5 text-uppercase mb-0">Le verger</h1>
+            <p class="mb-0 text-uppercase">cafe - restaurant - girl - snack</p>
+            <p class="mb-0">Cont: P11790056295Y-IRC No RC /NGA/2014/A/037</p>
+            <p class="mb-0">Tél: (237) 699.44.64.19 / 22.16.55.95</p>
+            <p class="text-muted">Sis au centre commercial, face Express Union Adama</p>
+
+            <div class="d-flex align-items-end justify-content-between">
+                <h1 class="h3 lead text-uppercase fw-bold display-6">facture</h1>
+                <h1 class="h4">No: <span class="text-danger">{{invoice.number}}</span></h1>
+            </div>
+            <p class="mb-0">Date: <span class="bg-dark text-light">{{invoice.date|date}}</span></p>
+            <p>Doit ............................................</p>
+
+            <table class="table table-bordered">
+                <thead>
+                    <th>Ref</th>
+                    <th>Qté</th>
+                    <th>Désignation</th>
+                    <th>P.U</th>
+                    <th>P.TOTAL</th>
+                </thead>
+
+                <tbody>
+
+                    {% for entry in entries %}
+                    <tr>
+                        <td></td>
+                        <td>{{entry.quantity}}</td>
+                        <td>{{entry.content_object}}</td>
+                        <td>{{entry.get_room_price}}</td>
+                        <td>{{entry.price}}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr>
+                        <td class="text-uppercase text-end" colspan="4">Total</td>
+                        <td>{{invoice.table_number|default:''}}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <table class="table table-bordered">
+                <thead>
+                    <th>Le Serveur</th>
+                    <th>Le Caissier</th>
+                    <th>No Table</th>
+
+                </thead>
+
+                <tbody>
+                    <tr>
+
+                        <td></td>
+                        <td class="text-uppercase">{{request.user.username}}</td>
+                        <td>{{invoice.table_number|default:''}}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock content %}

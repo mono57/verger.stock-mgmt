@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.base import ModelState
 from django_extensions.db.models import TimeStampedModel
@@ -69,7 +69,7 @@ class Product(TimeStampedModel):
         blank=True,
         verbose_name='Types de préparation qu\'on peut faire avec ce produit',
         help_text='Appuyez sur Shift pour selectionner plusieurs')
-    
+
     product_type = models.ForeignKey(
         ProductType,
         blank=True,
@@ -89,6 +89,7 @@ class Product(TimeStampedModel):
     def __str__(self):
         return self.name
 
+
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
@@ -98,16 +99,30 @@ class Portion(TimeStampedModel):
         blank=True,
         null=True)
 
+class PriceManager(models.Manager):
+    def get_price_by_room(self, room):
+        qs = self.get_queryset()
+        return qs.filter(room=room).first()
+class Price(TimeStampedModel):
+    price = models.IntegerField()
+    room = models.ForeignKey(
+        Room, on_delete=models.DO_NOTHING, related_name='room_prices')
+    content_type = models.ForeignKey(
+        ContentType, null=True, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    # dish = models.ForeignKey(
+    #     Dish, on_delete=models.DO_NOTHING, related_name='dish_prices')
 
-class Drink(TimeStampedModel):
-    name = models.CharField(max_length=100, verbose_name='Nom de la boisson')
+    objects = PriceManager()
 
     class Meta:
-        verbose_name = 'Boisson'
-        verbose_name_plural = 'Boissons'
+        verbose_name = 'Prix'
+        verbose_name_plural = 'Prix'
 
     def __str__(self):
-        return self.name
+        return str(self.price)
+
 
 class Dish(TimeStampedModel):
     name = models.CharField(
@@ -120,6 +135,7 @@ class Dish(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='dishs',
         verbose_name='Formule de partition')
+    prices = GenericRelation(Price)
 
     class Meta:
         verbose_name = 'Plat'
@@ -128,23 +144,19 @@ class Dish(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def get_price_by_room(self, room):
+        qs = Price.objects.filter()
 
-class Price(TimeStampedModel):
-    price = models.IntegerField()
-    room = models.ForeignKey(
-        Room, on_delete=models.DO_NOTHING, related_name='room_prices')
-    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.CASCADE)
-    content_id = models.PositiveIntegerField(null=True)
-    content_object = GenericForeignKey('content_type', 'content_id')
-    # dish = models.ForeignKey(
-    #     Dish, on_delete=models.DO_NOTHING, related_name='dish_prices')
+class Drink(TimeStampedModel):
+    name = models.CharField(max_length=100, verbose_name='Nom de la boisson')
+    prices = GenericRelation(Price)
 
     class Meta:
-        verbose_name = 'Prix'
-        verbose_name_plural = 'Prix'
+        verbose_name = 'Boisson'
+        verbose_name_plural = 'Boissons'
 
     def __str__(self):
-        return str(self.price)
+        return self.name
 
 
 class Invoice(TimeStampedModel):
@@ -156,9 +168,16 @@ class Invoice(TimeStampedModel):
 
     table_number = models.IntegerField(
         blank=True,
+        null=True,
         verbose_name="Numéro de la table")
 
-    total_price = models.IntegerField(verbose_name='Montant')
+    room = models.ForeignKey(
+        Room, null=True, on_delete=models.CASCADE, verbose_name='Salle')
+
+    total_price = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Montant')
 
     date = models.DateField(
         default=timezone.now,
@@ -173,7 +192,7 @@ class Invoice(TimeStampedModel):
 
     @property
     def number(self):
-        return "{:6d}".format(self.pk)
+        return "{:06d}".format(self.pk)
 
 
 class InvoiceEntry(TimeStampedModel):
@@ -181,10 +200,10 @@ class InvoiceEntry(TimeStampedModel):
         Invoice,
         on_delete=models.DO_NOTHING,
         related_name='invoices')
-    
+
     content_type = models.ForeignKey(
-        ContentType, 
-        null=True, 
+        ContentType,
+        null=True,
         on_delete=models.CASCADE)
     content_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'content_id')
