@@ -1,0 +1,63 @@
+{% extends "base.html" %} 
+
+{% block content %}
+    <div class="row pt-3">
+        <div class="col-6">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h1 class="h5">Transférer un produit à la cuisine</h1>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {% if partitionformulas %}
+                        <label for="partitionformula">Choisir la formule utilisée pour le portionnage</label>
+                        <select name="partitionformula" class="form-select" id="partitionformula">
+                            <option value="-1" selected>--------------------</option>
+                            {% for partitionformula in partitionformulas %}
+                                <option value="{{ partitionformula.id }}">{{ partitionformula }}</option>
+                            {% empty %}
+                                <p>Aucune formule, veuillez en <a href="{% url 'formula-add' %}" class="btn btn-primary">ajouter</a>.</p>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <p>Aucune formule, veuillez en <a href="{% url 'formula-add' %}" class="btn btn-primary">ajouter</a>.</p>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="quantity">Quantité à transférer</label>
+                    <input type="number" name="quantity" class="form-control" id="quantity" value="0" min="0" max="0">
+                </div>
+
+                <div class="mb-3 d-flex align-items-center">
+                    <button class="btn btn-dark" type="submit">Tranférer</button>
+                </div>
+        </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("#partitionformula").change(function () {
+            var partitionformula_id = $(this).val();
+            $.ajax({
+                url: '{% url "backoffice:ajax_get_max_portion_number" %}',
+                data: {
+                    'partitionformula_id': partitionformula_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.finded) {
+                        // alert("Data finded!");
+                        $("#quantity").attr("min", "0");
+                        $("#quantity").attr("max", String(data.stock_store));
+                    } else {
+                        // alert("Data not finded");
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -5,8 +5,9 @@ from backoffice.models import (
     Dish, Drink, Invoice, InvoiceEntry, 
     PartitionFormulla, Portion, 
     Price, 
-    Product, 
-    Room)
+    Product,
+    ProductType,
+    Room, Transfert)
 
 admin.site.register(PartitionFormulla)
 admin.site.register(Product)
@@ -19,4 +20,6 @@ admin.site.register(Portion)
 admin.site.register(Drink)
 admin.site.register(Invoice)
 admin.site.register(InvoiceEntry)
+admin.site.register(ProductType)
+admin.site.register(Transfert)
 # Register your models here.
