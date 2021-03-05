@@ -1,8 +1,12 @@
  {% url 'backoffice:home' as dashboard_url %}
  {% url 'backoffice:dish-add' as dish_add_url %}
  {% url 'backoffice:buying-add' as buying_add_url %}
+<<<<<<< HEAD
+ {% url 'backoffice:menu_restaurant' as menu_restaurant %}
+=======
  {% url 'backoffice:drink-add' as drink_add_url %}
  {% url 'backoffice:invoice-add' as invoice_add_url %}
+>>>>>>> main
 
 {% with is_superuser=request.user.is_superuser %}
 
@@ -40,7 +44,7 @@
                  </a>
              </li>
              <li class="nav-item">
-                 <a class="nav-link" href="#">
+                 <a class="nav-link" href="{{menu_restaurant}}">
                      <span data-feather="list"></span>
                      Le Menu du restaurant
                  </a>

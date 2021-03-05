@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% url 'backoffice:menu_restaurant' as menu_restaurant %}
+{% load static %}
+{% block content %}
+
+<div class="col-6">
+    
+    <div class="mb-3">
+        <h1 class="h1">Plat et Besoins du restaurant</h1>
+    </div>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{menu_restaurant}}?filter=all">Tout</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{menu_restaurant}}?filter=dish">Plats</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{menu_restaurant}}?filter=drink">Besoins</a>
+        </li>
+    </ul>
+
+    <div class="mb-4" >
+        <h3>
+            Plats
+        </h3>
+        
+        <div>
+            <div class="row">
+                {% for dish in dishs %}
+                    <div class="col-4">
+                        <div class="card" style="">
+                            <img src="{% static 'assets/images/dish.png' %}" height="10%"  class="card-img-top" alt="...">
+                            <div class="card-body">
+                            <h5 class="card-title">{{dish.name}}</h5>
+                            <p class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <h3>
+            Boisson
+        </h3>
+        
+        <div>
+            <div class="row">
+                {% for drink in drinks %}
+                    <div class="col-4">
+                        <div class="card" style="">
+                            <img src="{% static 'assets/images/drink.png' %}" height="10%"  class="card-img-top" alt="...">
+                            <div class="card-body">
+                            <h5 class="card-title">{{drink.name}}</h5>
+                            <p class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

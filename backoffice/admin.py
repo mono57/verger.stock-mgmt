@@ -7,7 +7,7 @@ from backoffice.models import (
     Price, 
     Product,
     ProductType,
-    Room, Transfert)
+    Room, Transfert, Drink)
 
 admin.site.register(PartitionFormulla)
 admin.site.register(Product)
@@ -22,4 +22,5 @@ admin.site.register(Invoice)
 admin.site.register(InvoiceEntry)
 admin.site.register(ProductType)
 admin.site.register(Transfert)
+admin.site.register(Drink)
 # Register your models here.
