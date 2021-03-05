@@ -22,5 +22,4 @@ admin.site.register(Invoice)
 admin.site.register(InvoiceEntry)
 admin.site.register(ProductType)
 admin.site.register(Transfert)
-admin.site.register(Drink)
 # Register your models here.

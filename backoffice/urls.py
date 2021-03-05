@@ -5,15 +5,8 @@ from backoffice.views import (
     InvoiceEntryDishCreateView, 
     InvoiceEntryDrinkCreateView, ProductCreateView, 
     DashboardTemplateView, ProductListView, 
-<<<<<<< HEAD
     RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, 
     UserCreateView, UserListView, state_sale, transfert_portion, ajax_get_max_portion_number, menu_restaurant )
-=======
-    RoomCreateView, RoomListView, RoomUpdateView, 
-    UserActivateDeactivateView, UserCreateView, 
-    UserListView, state_sale,
-    transfert_portion, ajax_get_max_portion_number)
->>>>>>> main
 
 app_name = 'backoffice'
 
@@ -28,9 +21,7 @@ urlpatterns = [
     path('buying/add/', BuyingCreateView.as_view(), name='buying-add'),
     path('user/add/', UserCreateView.as_view(), name='user-add'),
     path('user/list/', UserListView.as_view(), name='user-list'),
-<<<<<<< HEAD
     path('restaurant/menu', menu_restaurant, name='menu_restaurant'),
-=======
     path('drink/add/', DrinkCreateView.as_view(), name='drink-add'),
     path('invoice/add/', InvoiceCreateView.as_view(), name='invoice-add'),
     path(
@@ -41,7 +32,6 @@ urlpatterns = [
         'invoice/<int:invoice_pk>/add/drink/', 
         InvoiceEntryDrinkCreateView.as_view(),
         name='invoice_entry_drink-add'),
->>>>>>> main
     path(
         'user/activate/deactivate/', 
         UserActivateDeactivateView.as_view(), 
