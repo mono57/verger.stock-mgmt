@@ -9,12 +9,12 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
-                    {% if partitionformulas %}
-                        <label for="partitionformula">Choisir la formule utilisée pour le portionnage</label>
-                        <select name="partitionformula" class="form-select" id="partitionformula">
+                    {% if portions %}
+                        <label for="portion">Choisir le type de portion à déplacer en Cuisine</label>
+                        <select name="portion" class="form-select" id="portion">
                             <option value="-1" selected>--------------------</option>
-                            {% for partitionformula in partitionformulas %}
-                                <option value="{{ partitionformula.id }}">{{ partitionformula }}</option>
+                            {% for portion in portions %}
+                                <option value="{{ portion.id }}">{{ portion }}</option>
                             {% empty %}
                                 <p>Aucune formule, veuillez en <a href="{% url 'formula-add' %}" class="btn btn-primary">ajouter</a>.</p>
                             {% endfor %}
@@ -40,12 +40,12 @@
 
 {% block javascript %}
     <script>
-        $("#partitionformula").change(function () {
-            var partitionformula_id = $(this).val();
+        $("#portion").change(function () {
+            var portion_id = $(this).val();
             $.ajax({
                 url: '{% url "backoffice:ajax_get_max_portion_number" %}',
                 data: {
-                    'partitionformula_id': partitionformula_id
+                    'portion_id': portion_id
                 },
                 dataType: 'json',
                 success: function (data) {

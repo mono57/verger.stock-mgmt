@@ -1,0 +1,22 @@
+<form method="post">
+
+    {% csrf_token %}
+
+    {% for input in form %}
+    <div class="mb-3">
+        <label for="{{input.name}}">{{input.label}}</label>
+        {{input}}
+        {% if input.help_text %}
+        <p class="text-muted mb-0">{{input.help_text}}</p>
+        {% endif %}
+        {{input.errors}}
+    </div>
+    {% endfor %}
+
+    {% block extraform %}{% endblock extraform %}
+    
+    <div class="mb-3">
+        <button class="btn btn-block btn-dark btn-sm" type="submit">{{btn_text}}</button>
+    </div>
+
+</form>
