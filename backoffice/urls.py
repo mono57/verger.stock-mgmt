@@ -3,7 +3,7 @@ from backoffice.views import (
     BuyingCreateView, BuyingEntryCreateView, DishCreateView, ProductCreateView, 
     DashboardTemplateView, ProductListView, 
     RoomCreateView, RoomListView, RoomUpdateView, UserActivateDeactivateView, 
-    UserCreateView, UserListView, state_sale, transfert_portion, ajax_get_max_portion_number)
+    UserCreateView, UserListView, state_sale, transfert_portion, ajax_get_max_portion_number, menu_restaurant )
 
 app_name = 'backoffice'
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('buying/add/', BuyingCreateView.as_view(), name='buying-add'),
     path('user/add/', UserCreateView.as_view(), name='user-add'),
     path('user/list/', UserListView.as_view(), name='user-list'),
+    path('restaurant/menu', menu_restaurant, name='menu_restaurant'),
     path(
         'user/activate/deactivate/', 
         UserActivateDeactivateView.as_view(), 

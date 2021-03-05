@@ -12,7 +12,7 @@ from django.views.generic.edit import UpdateView
 from django.http import JsonResponse
 from django.contrib import messages
 
-from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price, Transfert
+from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price, Transfert, Dish, Drink
 from backoffice.forms import (
     BuyingEntryModelForm,
     BuyingModelForm,
@@ -191,6 +191,10 @@ def state_sale(request):
 
     return render(request,'backoffice/state_sale.html')
 
+def menu_restaurant(request):
+    dishs = Dish.objects.all()
+    drinks = Drink.objects.all()
+    return render(request,'backoffice/menu_restaurant.html', locals())
 
 
 def transfert_portion(request):
