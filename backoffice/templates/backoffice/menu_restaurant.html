@@ -3,7 +3,7 @@
 {% load static %}
 {% block content %}
 
-<div class="col-6">
+<div class="col-12">
     
     <div class="mb-3">
         <h1 class="h1">Plat et Besoins du restaurant</h1>
@@ -11,16 +11,17 @@
 
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{menu_restaurant}}?filter=all">Tout</a>
+          <a class="nav-link {% if request.GET.filter == 'all' or request.GET.filter == None  %} active{% endif %} " aria-current="page" href="{{menu_restaurant}}?filter=all">Tout</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{menu_restaurant}}?filter=dish">Plats</a>
+          <a class="nav-link {% if request.GET.filter == 'dish' %} active{% endif %}" href="{{menu_restaurant}}?filter=dish">Plats</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{menu_restaurant}}?filter=drink">Besoins</a>
+          <a class="nav-link {% if request.GET.filter == 'drink' %} active{% endif %}" href="{{menu_restaurant}}?filter=drink">Besoins</a>
         </li>
     </ul>
 
+    {% if request.GET.filter == 'dish' or request.GET.filter == 'all' or request.GET.filter == None  %}
     <div class="mb-4" >
         <h3>
             Plats
@@ -29,7 +30,7 @@
         <div>
             <div class="row">
                 {% for dish in dishs %}
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="card" style="">
                             <img src="{% static 'assets/images/dish.png' %}" height="10%"  class="card-img-top" alt="...">
                             <div class="card-body">
@@ -42,7 +43,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
+    {% if request.GET.filter == 'drink' or request.GET.filter == 'all' or request.GET.filter == None  %}
     <div class="mb-4">
         <h3>
             Boisson
@@ -51,7 +54,7 @@
         <div>
             <div class="row">
                 {% for drink in drinks %}
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="card" style="">
                             <img src="{% static 'assets/images/drink.png' %}" height="10%"  class="card-img-top" alt="...">
                             <div class="card-body">
@@ -64,6 +67,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
+
+
 
 </div>
 
