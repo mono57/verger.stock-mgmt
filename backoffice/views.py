@@ -4,6 +4,7 @@ from django.db.models.query import QuerySet
 from django.forms.forms import BaseForm
 from django.forms.models import BaseModelForm
 from django.http.response import HttpResponse
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -107,19 +108,19 @@ class DishCreateView(AbstractSellableCreateView):
     success_message = 'Nouveau plat defini avec succès'
 
 
-class BuyingCreateView(LoginRequiredMixin, CreateView):
-    template_name = 'backoffice/buying_form.html'
-    form_class = BuyingModelForm
-
-    def get_success_url(self) -> str:
-        return reverse(
+class BuyingCreateView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        buying = Buying.objects.create()
+        return redirect(reverse(
             'backoffice:buying-product-add',
-            kwargs={'buying_pk': self.buying_pk})
+            kwargs={'buying_pk': buying.pk}))
+    
 
-    def form_valid(self, form):
-        obj = form.save()
-        self.buying_pk = obj.pk
-        return super().form_valid(form)
+
+    # def form_valid(self, form):
+    #     obj = form.save()
+    #     self.buying_pk = obj.pk
+    #     return super().form_valid(form)
 
 
 class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -336,16 +337,14 @@ def state_sale(request):
 def transfert_portion(request):
     if request.method == 'POST':
         
-        partition_formula_id = request.POST['partitionformula']
+        portion_id = request.POST['portion']
         quantity = request.POST['quantity']
-        if int(partition_formula_id) > 0:
-            partition_formula = PartitionFormulla.objects.get(id=int(partition_formula_id))
-            portion = partition_formula.portion
+        if int(portion_id) > 0:
+            portion = Portion.objects.get(id=int(portion_id))
             if portion.stock_store >= int(quantity):
                 portion.stock_store -= int(quantity)
                 portion.store += int(quantity)
                 portion.save()
-                partition_formula.save()
                 Transfert(portion=portion, quantity=int(quantity)).save()
             else:
                 messages.error(request, f"Erreur: la quantité à transférer est supérieure à ce qui est en stock!")
@@ -355,33 +354,30 @@ def transfert_portion(request):
 
 
     products = Product.objects.all()
-    partitionformulas = PartitionFormulla.objects.all()
+    portions = Portion.objects.all()
 
     return render(request, 'backoffice/transfert_portion.html', {
-        "partitionformulas": partitionformulas,
+        "portions": portions,
     })
 
 
 def ajax_get_max_portion_number(request):
-    partition_formula_id = request.GET.get('partitionformula_id', 'None')
-    # print("Partition id:", partition_formula_id)
+    portion_id = request.GET.get('portion_id', 'None')
+    # print("Partition id:", portion_id)
     data = {}
-    if partition_formula_id.isdigit():
+    if portion_id.isdigit():
         try:
-            partition_formula = PartitionFormulla.objects.get(id=int(partition_formula_id))
-            # print(partition_formula)
-            stock_store = partition_formula.portion.stock_store
+            portion = Portion.objects.get(id=int(portion_id))
+            stock_store = portion.stock_store
             data = {
                 'finded': True,
                 'stock_store': stock_store
             }
         except Exception:
-            print("OK 1")
             data = {
                 'finded': False,
             }
     else:
-        print("OK 2")
         data = {
             'finded': False
         }

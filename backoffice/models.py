@@ -28,6 +28,8 @@ class PartitionFormulla(TimeStampedModel):
         max_length=100,
         verbose_name='Type de préparation'
     )
+    portions_name = models.CharField(
+        max_length=50, verbose_name='Nom de portion', default='')
     input = models.IntegerField(
         default=1, verbose_name="Quantité en kg ou litre")
     output = models.IntegerField(
@@ -48,9 +50,9 @@ class PartitionFormulla(TimeStampedModel):
         # print("Decimal part: ", decimal_part, type(decimal_part))
 
         if decimal_part <= 5:
-            stock_quantity =  math.floor(stock_quantity)
+            stock_quantity = math.floor(stock_quantity)
         else:
-            stock_quantity =  math.ceil(stock_quantity)
+            stock_quantity = math.ceil(stock_quantity)
         # print("Stock qtté: ", stock_quantity, type(stock_quantity))
         return int(stock_quantity)
 
@@ -59,7 +61,7 @@ class ProductType(TimeStampedModel):
     name = models.CharField(
         max_length=250,
         verbose_name="Type de produit")
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -112,12 +114,19 @@ class Portion(TimeStampedModel):
         PartitionFormulla,
         on_delete=models.DO_NOTHING,
         blank=True,
-        null=True)
+        null=True,
+        related_name='portion')
+
+    def __str__(self):
+        return 'Portion pour {}'.format(self.partition.portions_name)
+
 
 class PriceManager(models.Manager):
     def get_price_by_room(self, room):
         qs = self.get_queryset()
         return qs.filter(room=room).first()
+
+
 class Price(TimeStampedModel):
     price = models.IntegerField()
     room = models.ForeignKey(
@@ -161,6 +170,7 @@ class Dish(TimeStampedModel):
 
     def get_price_by_room(self, room):
         qs = Price.objects.filter()
+
 
 class Drink(TimeStampedModel):
     name = models.CharField(max_length=100, verbose_name='Nom de la boisson')
@@ -227,7 +237,7 @@ class InvoiceEntry(TimeStampedModel):
 
 
 class Buying(TimeStampedModel):
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.now, blank=True)
     total_amount = models.IntegerField(
         blank=True,
         null=True,
@@ -245,6 +255,8 @@ class BuyingEntry(TimeStampedModel):
     buying = models.ForeignKey(
         Buying, on_delete=models.DO_NOTHING, related_name='entries')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.PositiveIntegerField(
+        verbose_name='Prix d\'achat', blank=True, null=True)
     quantity = models.IntegerField(verbose_name='Quantité achetée')
     partition = models.ForeignKey(
         PartitionFormulla,
@@ -257,4 +269,3 @@ class BuyingEntry(TimeStampedModel):
 class Transfert(TimeStampedModel):
     portion = models.ForeignKey(Portion, on_delete=models.DO_NOTHING)
     quantity = models.IntegerField(default=0)
-
