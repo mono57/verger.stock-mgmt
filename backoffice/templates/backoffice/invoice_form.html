@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-6">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Préparer une facture</h1>
+    </div>
+
+    <form method="post">
+
+    {% csrf_token %}
+
+    {% for input in form %}
+    <div class="mb-3">
+        <label for="{{input.name}}">{{input.label}}</label>
+        {{input}}
+        {% if input.help_text %}
+        <p class="text-muted mb-0">{{input.help_text}}</p>
+        {% endif %}
+        {{input.errors}}
+    </div>
+    {% endfor %}
+    
+    <div class="mb-3">
+        <input class="btn btn-block btn-dark btn-sm" value="Ajouter un plat" type="submit" name="_add_dish">
+        <input class="btn btn-block btn-dark btn-sm" value="Ajouter une boisson" type="submit" name="_add_drink">
+    </div>
+
+</form>
+</div>
+
+{% endblock content %}

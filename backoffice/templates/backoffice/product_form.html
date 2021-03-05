@@ -11,6 +11,7 @@
     {% endif %}
     <div class="d-flex align-items-center justify-content-between mb-3">
     <h1 class="h5">Enregistrer un nouveau produit</h1>
+    <a href="{% url 'backoffice:product-list' %}">Tous les produits</a>
     </div>
     <form method="post">
         {% csrf_token %}

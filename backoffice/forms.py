@@ -1,11 +1,16 @@
+from django.forms import widgets
 from django.utils import timezone
 from django import forms
+from enum import Enum
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
-from backoffice.models import Buying, BuyingEntry, Dish, PartitionFormulla, Product, Room
+from backoffice.models import (
+    Buying, BuyingEntry, Dish, Drink, Invoice, InvoiceEntry, PartitionFormulla, Product, Room)
 
 
 User = get_user_model()
+
+
 class ProductModelForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -42,8 +47,7 @@ class RoomModelForm(forms.ModelForm):
         return name
 
 
-class DishModelForm(forms.ModelForm):
-
+class AbstractSellableModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         rooms = Room.objects.all()
@@ -56,8 +60,9 @@ class DishModelForm(forms.ModelForm):
                 widget=forms.NumberInput(attrs={
                     'class': 'form-control'
                 }))
-            # self.initial[field_name] = 0
 
+
+class DishModelForm(AbstractSellableModelForm):
     class Meta:
         model = Dish
         fields = ('name', 'partition')
@@ -96,6 +101,7 @@ class BuyingEntryModelForm(forms.ModelForm):
                 'Vous devez choisir la formule de partition a appliquée sur la quantité achetée')
         return partition
 
+
 class UserCreationForm(BaseUserCreationForm):
     email = forms.EmailField(
         required=False,
@@ -106,4 +112,58 @@ class UserCreationForm(BaseUserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
         labels = {
             'username': "Nom d'utilisateur du caissier"
+        }
+
+
+class DrinkModelForm(AbstractSellableModelForm):
+    class Meta:
+        model = Drink
+        fields = ('name', )
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+
+class InvoiceModelForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ('room', 'date')
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'room': forms.Select(attrs={'class': 'form-select'})
+        }
+
+
+class InvoiceEntryDrinkModelForm(forms.ModelForm):
+    choices = forms.ModelChoiceField(
+        queryset=Drink.objects.all(),
+        label='Choisissez la boisson',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select'}))
+    class Meta:
+        model = InvoiceEntry
+        fields = ('choices', 'quantity', )
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1})
+        }
+        labels = {
+            'quantity': 'Nombre de bouteilles'
+        }
+
+
+class InvoiceEntryDishModelForm(forms.ModelForm):
+    choices = forms.ModelChoiceField(
+        queryset=Dish.objects.all(),
+        label='Choisissez la boisson',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select'}))
+  
+    class Meta:
+        model = InvoiceEntry
+        fields = ('quantity', )
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1})
+        }
+        labels = {
+            'quantity': 'Nombre de plats'
         }
