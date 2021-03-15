@@ -49,10 +49,43 @@
 
     </div>
 </div>
-<div class="row">
-    <h2>
-        Liste des factures recente
-    </h2>
+<div class="row container mt-4">
+    <div class="col-lg-12">
+        <h2>
+            Liste des factures recentes
+        </h2>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">ORDER</th>
+            <th scope="col">DATE</th>
+            <th scope="col">SHIP TO</th>
+            <th scope="col">STATUT</th>
+            <th scope="col">AMOUNT</th>
+            <th scope="col">ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>#92848F492</td>
+            <td>20/04/2020</td>
+            <td>Table 23, Salle VIP Pro Max</td>
+            <td>
+                <span class="badge bg-success">Success</span>
+            </td>
+            <td>
+                93,094 XAF
+            </td>
+            <td>
+                <a href="" class="btn btn-primary">Voir plus</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 </div>
 
 {% endblock content %}
