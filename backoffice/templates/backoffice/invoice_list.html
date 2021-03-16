@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+<div class="row container mt-4">
+	<div class="col-lg-12">
+		<h1>Liste des factures</h1>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">ORDER</th>
+					<th scope="col">DATE</th>
+					<th scope="col">SHIP TO</th>
+					<th scope="col">STATUT</th>
+					<th scope="col">AMOUNT</th>
+					<th scope="col">ACTION</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for invoice in invoices %} {% if invoice.is_valid %}
+				<tr>
+					<th scope="row">1</th>
+					<td>#{{invoice.number}}</td>
+					<td>{{invoice.created}}</td>
+					<td>
+						Salle {{invoice.room.name}}, Table
+						{{invoice.table_number}},
+					</td>
+					<td>
+						{% if invoice.is_paid %}
+						<span class="badge bg-success">Success</span>
+						{% else %}
+						<span class="badge bg-danger">en attente</span>
+						{% endif %}
+					</td>
+					<td>{{invoice.total_price}} XAF</td>
+					<td>
+						{% if not invoice.is_paid %}
+						<a href="" class="btn btn-success">Payer la facturer</a>
+						{% endif %}
+                        <a href="" class="btn btn-warning"><span data-feather="printer"></span></a>
+					</td>
+				</tr>
+				{% endif %} {% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+{% endblock content %}

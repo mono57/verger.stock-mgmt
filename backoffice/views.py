@@ -351,8 +351,12 @@ class InvoiceEntryDishCreateView(AbstractInvoiceEntryCreateView):
 
 
 def state_sale(request):
-
     return render(request,'backoffice/state_sale.html')
+
+
+def invoice_list(request):
+    invoices = Invoice.objects.all()
+    return render(request,'backoffice/invoice_list.html', locals())
 
 def menu_restaurant(request):
     dishs = Dish.objects.all()

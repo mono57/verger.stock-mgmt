@@ -197,6 +197,7 @@ class Invoice(TimeStampedModel):
     table_number = models.IntegerField(
         blank=True,
         null=True,
+        default=0,
         verbose_name="Numéro de la table")
 
     room = models.ForeignKey(
@@ -207,6 +208,10 @@ class Invoice(TimeStampedModel):
         null=True,
         default=0,
         verbose_name='Montant')
+    
+    is_paid = models.BooleanField(
+        default=False,
+        verbose_name="Facture payer")
 
     date = models.DateField(
         default=timezone.now,
@@ -218,6 +223,9 @@ class Invoice(TimeStampedModel):
 
     def __str__(self):
         return self.number
+
+    def is_valid(self):
+        return self.entries.all().exists()
 
     @property
     def number(self):
