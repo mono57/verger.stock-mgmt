@@ -8,7 +8,7 @@
     {% endif %}
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h1 class="h5">Ajouter un plat</h1>
-        <a href="" class="float-end">Aller au menu</a>
+        <a href="{% url 'backoffice:menu_restaurant' %}?filter=dish" class="float-end">Aller au menu</a>
     </div>
     <form method="post">
         {% csrf_token %}

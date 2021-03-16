@@ -7,7 +7,7 @@ from backoffice.models import (
     Price, 
     Product,
     ProductType,
-    Room, Transfert)
+    Room, Transfert, Drink)
 
 admin.site.register(PartitionFormulla)
 admin.site.register(Product)

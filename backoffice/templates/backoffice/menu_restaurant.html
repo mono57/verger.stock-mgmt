@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% url 'backoffice:menu_restaurant' as menu_restaurant %}
+{% load static %}
+{% block content %}
+
+<div class="col-12">
+    
+    <div class="mb-3">
+        <h1 class="h1">Plat et Boisson du restaurant</h1>
+    </div>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <a class="nav-link {% if request.GET.filter == 'all' or request.GET.filter == None  %} active{% endif %} " aria-current="page" href="{{menu_restaurant}}?filter=all">Tout</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.GET.filter == 'dish' %} active{% endif %}" href="{{menu_restaurant}}?filter=dish">Plats</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.GET.filter == 'drink' %} active{% endif %}" href="{{menu_restaurant}}?filter=drink">Boissons</a>
+        </li>
+    </ul>
+
+    {% if request.GET.filter == 'dish' or request.GET.filter == 'all' or request.GET.filter == None  %}
+    <div class="mb-4" >
+        <h3>
+            Plats
+        </h3>
+        
+        <div>
+            <div class="row">
+                {% for dish in dishs %}
+                    <div class="col-3 mb-3">
+                        <div class="card" style="">
+                            <img src="{% static 'assets/images/dish.png' %}" height="10%"  class="card-img-top" alt="...">
+                            <div class="card-body">
+                            <h5 class="card-title">{{dish.name|title}}</h5>
+                            <p class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if request.GET.filter == 'drink' or request.GET.filter == 'all' or request.GET.filter == None  %}
+    <div class="mb-4">
+        <h3>
+            Boissons
+        </h3>
+        
+        <div>
+            <div class="row">
+                {% for drink in drinks %}
+                    <div class="col-3 mb-3">
+                        <div class="card" style="">
+                            <img src="{% static 'assets/images/drink.png' %}" height="10%"  class="card-img-top" alt="...">
+                            <div class="card-body">
+                            <h5 class="card-title">{{drink.name|title}}</h5>
+                            <p class="card-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+</div>
+
+{% endblock content %}
