@@ -4,6 +4,7 @@ from django import forms
 from enum import Enum
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
+from django.utils.translation import override
 from backoffice.models import (
     Buying, BuyingEntry, Dish, Drink, Invoice, InvoiceEntry, PartitionFormulla, Product, Room)
 
@@ -19,7 +20,7 @@ class ProductModelForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'product_type': forms.Select(attrs={'class': 'form-select'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
-            'partition': forms.SelectMultiple(attrs={'class': 'form-select'}),
+            'partition': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_name(self):
@@ -73,6 +74,7 @@ class DishModelForm(AbstractSellableModelForm):
 
 
 class BuyingModelForm(forms.ModelForm):
+
     class Meta:
         model = Buying
         fields = '__all__'
@@ -84,14 +86,18 @@ class BuyingModelForm(forms.ModelForm):
 
 
 class BuyingEntryModelForm(forms.ModelForm):
+    portions = forms.IntegerField(
+        label='Nombres de portions obtenues', 
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'id': 'portions'}))
     class Meta:
         model = BuyingEntry
-        fields = ('product', 'quantity', 'partition')
+        fields = ('product', 'price', 'quantity', 'portions')
         widgets = {
             'product': forms.Select(attrs={'class': 'form-select'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
-            'partition': forms.Select(attrs={'class': 'form-select'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+        
 
     def clean_partition(self):
         product = self.cleaned_data.get('product')
@@ -135,34 +141,44 @@ class InvoiceModelForm(forms.ModelForm):
 
 
 class InvoiceEntryDrinkModelForm(forms.ModelForm):
-    choices = forms.ModelChoiceField(
+    drinks = forms.ModelChoiceField(
         queryset=Drink.objects.all(),
         label='Choisissez la boisson',
         required=True,
         widget=forms.Select(attrs={'class': 'form-select'}))
+
+    room = forms.CharField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.initial['price'] = 
     class Meta:
         model = InvoiceEntry
-        fields = ('choices', 'quantity', )
+        fields = ('drinks', 'quantity', 'price', 'room')
         widgets = {
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1})
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
         labels = {
-            'quantity': 'Nombre de bouteilles'
+            'quantity': 'Nombre de bouteilles',
+            'price': 'Prix unitaire d\'une bouteille'
         }
 
 
 class InvoiceEntryDishModelForm(forms.ModelForm):
-    choices = forms.ModelChoiceField(
+    dishs = forms.ModelChoiceField(
         queryset=Dish.objects.all(),
-        label='Choisissez la boisson',
+        label='Choisissez le plat',
         required=True,
         widget=forms.Select(attrs={'class': 'form-select'}))
-  
+
+    room = forms.CharField(widget=forms.HiddenInput())
     class Meta:
         model = InvoiceEntry
-        fields = ('quantity', )
+        fields = ('dishs', 'quantity', 'price', 'room')
         widgets = {
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1})
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'})
         }
         labels = {
             'quantity': 'Nombre de plats'

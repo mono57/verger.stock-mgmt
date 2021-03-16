@@ -17,7 +17,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
 
-from backoffice.models import Buying, BuyingEntry, Drink, Invoice, InvoiceEntry, Portion, Product, Room, Price
+from backoffice.models import Buying, BuyingEntry, Dish, Drink, Invoice, InvoiceEntry, Portion, Product, Room, Price
 from django.views.generic.edit import UpdateView
 from django.http import JsonResponse
 from django.contrib import messages
@@ -52,6 +52,7 @@ class ProductCreateView(
         context = super().get_context_data(**kwargs)
         context['products'] = Product.objects.all()
         return context
+
 
 class ProductListView(LoginRequiredMixin, ListView):
     template_name = 'backoffice/product_list.html'
@@ -114,8 +115,6 @@ class BuyingCreateView(LoginRequiredMixin, View):
         return redirect(reverse(
             'backoffice:buying-product-add',
             kwargs={'buying_pk': buying.pk}))
-    
-
 
     # def form_valid(self, form):
     #     obj = form.save()
@@ -140,30 +139,31 @@ class BuyingEntryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 
     def form_valid(self, form):
         buying = self.get_buying_object()
+        portions = form.cleaned_data.get('portions')
         obj = form.save(commit=False)
         obj.buying = buying
         obj.save()
 
-        if obj.product.is_portionable:
-            partition = obj.partition
-            # print("Formule ", partition)
-            stock = partition.compute_stock_quantity(obj.quantity)
-            p, created  = Portion.objects.get_or_create(partition=partition)
-            # print("p, created", p, created)
+        product = obj.product
+
+        if product.is_portionable:
+            p, created = Portion.objects.get_or_create(product=product)
+
             if created:
-                p.stock_store=stock
-                p.partition=partition
+                p.stock_store = portions
+                p.product = product
             else:
-                p.stock_store += stock
+                p.stock_store += portions
             p.save()
+
         else:
-            stock = obj.quantity
-            p, created = Portion.objects.get_or_create(partition=partition)
+            p, created = Portion.objects.get_or_create(product=product)
+
             if created:
-                p.stock_store=stock
-                p.partition=obj.partition
+                p.stock_store = portions
+                p.product = product
             else:
-                p.stock_store += stock
+                p.stock_store += portions
             p.save()
 
         return super().form_valid(form)
@@ -255,6 +255,11 @@ class AbstractInvoiceEntryCreateView(
             {'invoice': self.get_invoice_object()})
         return context
 
+    def get_initial(self) -> Dict[str, Any]:
+        initial = super().get_initial()
+        initial['room'] = self.get_invoice_object().room
+        return initial
+
     def get_invoice_object(self):
         return get_object_or_404(
             Invoice,
@@ -268,23 +273,31 @@ class InvoiceEntryDrinkCreateView(AbstractInvoiceEntryCreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({'btn_text': 'Ajouter la boisson'})
+        context.update(
+            {'add_url': reverse(
+                'backoffice:invoice_entry_dish-add',
+                kwargs={'invoice_pk': self.get_invoice_object().pk})})
+        context.update({'add_url_text': 'Ajouter un plat à la facture'})
         return context
 
     def form_valid(self, form: BaseForm) -> HttpResponse:
         cleaned_data = form.cleaned_data
 
         invoice_obj = self.get_invoice_object()
-        drink_obj = cleaned_data.get('choices')
+        drink_obj = cleaned_data.get('drinks')
+        quantity = cleaned_data.get('quantity')
+        price = cleaned_data.get('price')
 
-        invoice_entry_price = drink_obj.prices.get_price_by_room(
-            room=invoice_obj.room)
-
-        InvoiceEntry.objects.create(
+        entry = InvoiceEntry.objects.create(
             invoice=invoice_obj,
             content_object=drink_obj,
-            quantity=cleaned_data.get('quantity'),
-            price=invoice_entry_price
+            quantity=quantity,
+            price=price,
+            total_price=price*quantity
         )
+
+        invoice_obj.total_price += entry.total_price
+        invoice_obj.save()
 
         return self.get_success_url()
 
@@ -301,23 +314,32 @@ class InvoiceEntryDishCreateView(AbstractInvoiceEntryCreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({'btn_text': 'Ajouter le plat'})
+        context.update(
+            {'add_url': reverse(
+                'backoffice:invoice_entry_drink-add',
+                kwargs={'invoice_pk': self.get_invoice_object().pk})})
+        context.update({'add_url_text': 'Ajouter une boisson à la facture'})
         return context
 
     def form_valid(self, form: BaseForm) -> HttpResponse:
         cleaned_data = form.cleaned_data
 
         invoice_obj = self.get_invoice_object()
-        dish_obj = cleaned_data.get('choices')
+        dish_obj = cleaned_data.get('dishs')
+        quantity = cleaned_data.get('quantity')
+        price = cleaned_data.get('price')
 
-        invoice_entry_price = dish_obj.prices.get_price_by_room(
-            room=invoice_obj.room)
-
-        InvoiceEntry.objects.create(
+        # invoice_entry_price = dish_obj.prices.get_price_by_room(
+        #     room=invoice_obj.room)
+        entry = InvoiceEntry.objects.create(
             invoice=invoice_obj,
             content_object=dish_obj,
             quantity=cleaned_data.get('quantity'),
-            price=invoice_entry_price.price
+            price=price,
+            total_price=quantity*price
         )
+        invoice_obj.total_price += entry.total_price
+        invoice_obj.save()
 
         return self.get_success_url()
 
@@ -340,7 +362,7 @@ def menu_restaurant(request):
 
 def transfert_portion(request):
     if request.method == 'POST':
-        
+
         portion_id = request.POST['portion']
         quantity = request.POST['quantity']
         if int(portion_id) > 0:
@@ -351,11 +373,12 @@ def transfert_portion(request):
                 portion.save()
                 Transfert(portion=portion, quantity=int(quantity)).save()
             else:
-                messages.error(request, f"Erreur: la quantité à transférer est supérieure à ce qui est en stock!")
+                messages.error(
+                    request, f"Erreur: la quantité à transférer est supérieure à ce qui est en stock!")
             messages.success(request, f"Transfert réussi!")
         else:
-            messages.error(request, f"Erreur: Veuillez choisir une bonne formule")
-
+            messages.error(
+                request, f"Erreur: Veuillez choisir une bonne formule")
 
     products = Product.objects.all()
     portions = Portion.objects.all()
@@ -363,6 +386,59 @@ def transfert_portion(request):
     return render(request, 'backoffice/transfert_portion.html', {
         "portions": portions,
     })
+
+
+class AjaxProductGetPartitionFormula(View):
+    def get(self, request, *args, **kwargs):
+
+        product_pk = int(request.GET.get('product_pk'))
+        qs = Product.objects.filter(pk=product_pk)
+
+        if not qs.exists():
+            return JsonResponse({'ok': False})
+
+        formula = qs.first().partition
+
+        if not formula:
+            return self.response('Le produit n\'a pas de formule de partition')
+
+        return self.response('{} quantité donne {} portions'.format(formula.input, formula.output))
+
+    def response(self, message):
+        return JsonResponse({'message': message})
+
+
+class AjaxRoomDishPrice(View):
+    def get(self, request, *args, **kwargs):
+        dish_pk = int(request.GET.get('dish_pk'))
+        room_name = request.GET.get('room')
+
+        dish_qs = Dish.objects.filter(pk=dish_pk)
+        room_qs = Room.objects.filter(name=room_name)
+        if dish_qs.exists() and room_qs.exists():
+            dish_obj, room_obj = dish_qs.first(), room_qs.first()
+
+            price_obj = dish_obj.prices.get_price_by_room(room=room_obj)
+
+            return JsonResponse({'price': price_obj.price}) if price_obj is not None else JsonResponse({'price': 0})
+
+        return JsonResponse({})
+
+class AjaxRoomDrinkPrice(View):
+    def get(self, request, *args, **kwargs):
+        drink_pk = int(request.GET.get('drink_pk'))
+        room_name = request.GET.get('room')
+
+        drink_qs = Drink.objects.filter(pk=drink_pk)
+        room_qs = Room.objects.filter(name=room_name)
+        if drink_qs.exists() and room_qs.exists():
+            drink_obj, room_obj = drink_qs.first(), room_qs.first()
+
+            price_obj = drink_obj.prices.get_price_by_room(room=room_obj)
+
+            return JsonResponse({'price': price_obj.price}) if price_obj is not None else JsonResponse({'price': 0})
+
+        return JsonResponse({})
 
 
 def ajax_get_max_portion_number(request):

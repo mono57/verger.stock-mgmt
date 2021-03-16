@@ -1,5 +1,6 @@
 import math
 from django.db import models
+from django.db.models.signals import post_save, pre_save
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -81,11 +82,13 @@ class Product(TimeStampedModel):
         default=ProductCategory.PORTIONABLE,
         verbose_name="Categorie du produit")
 
-    partition = models.ManyToManyField(
+    partition = models.OneToOneField(
         PartitionFormulla,
-        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
         verbose_name='Type de préparation qu\'on peut faire avec ce produit',
-        help_text='Appuyez sur Shift pour selectionner plusieurs')
+        help_text='Appuyez sur Shift pour selectionner plusieurs',
+        related_name='product')
 
     product_type = models.ForeignKey(
         ProductType,
@@ -110,8 +113,8 @@ class Product(TimeStampedModel):
 class Portion(TimeStampedModel):
     stock_store = models.IntegerField(default=0)
     store = models.IntegerField(default=0)
-    partition = models.OneToOneField(
-        PartitionFormulla,
+    product = models.OneToOneField(
+        Product,
         on_delete=models.DO_NOTHING,
         blank=True,
         null=True,
@@ -202,6 +205,7 @@ class Invoice(TimeStampedModel):
     total_price = models.IntegerField(
         blank=True,
         null=True,
+        default=0,
         verbose_name='Montant')
 
     date = models.DateField(
@@ -224,7 +228,7 @@ class InvoiceEntry(TimeStampedModel):
     invoice = models.ForeignKey(
         Invoice,
         on_delete=models.DO_NOTHING,
-        related_name='invoices')
+        related_name='entries')
 
     content_type = models.ForeignKey(
         ContentType,
@@ -234,7 +238,7 @@ class InvoiceEntry(TimeStampedModel):
     content_object = GenericForeignKey('content_type', 'content_id')
     quantity = models.IntegerField(verbose_name='Quantité achetée')
     price = models.IntegerField()
-
+    total_price = models.IntegerField(blank=True, null=True)
 
 class Buying(TimeStampedModel):
     date = models.DateField(default=timezone.now, blank=True)
@@ -257,13 +261,14 @@ class BuyingEntry(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.PositiveIntegerField(
         verbose_name='Prix d\'achat', blank=True, null=True)
-    quantity = models.IntegerField(verbose_name='Quantité achetée')
-    partition = models.ForeignKey(
-        PartitionFormulla,
-        help_text='Choisir la formule de partition a appliquée sur ce cette quantité',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+    quantity = models.IntegerField(
+        verbose_name='Quantité achetée ou obtenue après portionnage')
+    # partition = models.ForeignKey(
+    #     PartitionFormulla,
+    #     help_text='Choisir la formule de partition a appliquée sur ce cette quantité',
+    #     blank=True,
+    #     null=True,
+    #     on_delete=models.CASCADE)
 
 
 class Transfert(TimeStampedModel):
