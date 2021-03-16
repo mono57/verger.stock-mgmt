@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load static %}
 
 {% block content %}
 
@@ -12,7 +13,7 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <h1 class="h5"> Completez la facture </h1>
-
+            <a href="{{add_url}}">{{add_url_text}}</a>
         </div>
 
         <form method="post">
@@ -21,7 +22,9 @@
 
             {% for input in form %}
             <div class="mb-3">
+                {% if input.field.widget.input_type != 'hidden' %}
                 <label for="{{input.name}}">{{input.label}}</label>
+                {% endif %}
                 {{input}}
                 {% if input.help_text %}
                 <p class="text-muted mb-0">{{input.help_text}}</p>
@@ -57,7 +60,6 @@
 
             <table class="table table-bordered">
                 <thead>
-                    <th>Ref</th>
                     <th>Qté</th>
                     <th>Désignation</th>
                     <th>P.U</th>
@@ -66,19 +68,18 @@
 
                 <tbody>
 
-                    {% for entry in entries %}
+                    {% for entry in invoice.entries.all %}
                     <tr>
-                        <td></td>
                         <td>{{entry.quantity}}</td>
                         <td>{{entry.content_object}}</td>
-                        <td>{{entry.get_room_price}}</td>
                         <td>{{entry.price}}</td>
+                        <td>{{entry.total_price}}</td>
                     </tr>
                     {% endfor %}
 
                     <tr>
-                        <td class="text-uppercase text-end" colspan="4">Total</td>
-                        <td>{{invoice.table_number|default:''}}</td>
+                        <td class="text-uppercase text-end" colspan="3">Total</td>
+                        <td>{{invoice.total_price}}</td>
                     </tr>
 
                 </tbody>
@@ -108,3 +109,7 @@
 </div>
 
 {% endblock content %}
+
+{% block javascript %}
+  <script src="{% static 'assets/scripts/invoice.product.js' %}"></script>
+{% endblock javascript %}
