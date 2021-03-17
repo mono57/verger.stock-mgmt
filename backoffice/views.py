@@ -33,6 +33,7 @@ from backoffice.forms import (
     RoomModelForm,
     UserCreationForm)
 
+import datetime
 
 User = get_user_model()
 
@@ -351,12 +352,41 @@ class InvoiceEntryDishCreateView(AbstractInvoiceEntryCreateView):
 
 
 def state_sale(request):
-    return render(request,'backoffice/state_sale.html')
+
+    periode = request.GET.get('periode')
+    if periode is not None:
+        invoices = []
+        if periode == 'journalier':
+            invoices = Invoice.objects.filter(date=datetime.date.today(), is_paid=True)
+        elif periode == 'hebdomadaire':
+            from_date = datetime.datetime.now() - datetime.timedelta(days=7)
+            invoices = Invoice.objects.filter(date__range=[from_date,datetime.datetime.now()], is_paid=True)
+        elif periode == 'mensuel':
+            today = datetime.date.today()
+            invoices = Invoice.objects.filter(date__year=today.year, date__month=today.month, is_paid=True)
+            print(invoices)
+        
+        recette = 0
+        for i in invoices:
+            recette = recette + int( i.total_price)
+    return render(request,'backoffice/state_sale.html', locals())
 
 
 def invoice_list(request):
-    invoices = Invoice.objects.all()
+    invoices_list = Invoice.objects.all()
+    invoices = []
+
+    for invoice in invoices_list:
+        if invoice.is_valid() == True:
+            invoices.append(invoice)
+
     return render(request,'backoffice/invoice_list.html', locals())
+
+def invoice_mark_as_paid(request, pk):
+    invoice = Invoice.objects.get(pk=pk)
+    invoice.is_paid = True
+    invoice.save()
+    return redirect('backoffice:invoice-list')
 
 def menu_restaurant(request):
     dishs = Dish.objects.all()
