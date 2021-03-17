@@ -17,6 +17,7 @@ urlpatterns = [
     path('restaurant/menu', views.menu_restaurant, name='menu_restaurant'),
     path('drink/add/', views.DrinkCreateView.as_view(), name='drink-add'),
     path('invoice/list/', views.invoice_list , name='invoice-list'),
+    path('invoice/mark_as_paid/<int:pk>', views.invoice_mark_as_paid , name='invoice_mark_as_paid'),
     path('invoice/add/', views.InvoiceCreateView.as_view(), name='invoice-add'),
     path(
         'invoice/<int:invoice_pk>/add/dish/',

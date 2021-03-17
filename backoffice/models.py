@@ -203,7 +203,7 @@ class Invoice(TimeStampedModel):
         verbose_name="Numéro de la table")
 
     room = models.ForeignKey(
-        Room, null=True, on_delete=models.CASCADE, verbose_name='Salle')
+        Room, null=True, on_delete=models.DO_NOTHING, verbose_name='Salle')
 
     total_price = models.IntegerField(
         blank=True,
@@ -229,9 +229,12 @@ class Invoice(TimeStampedModel):
     def is_valid(self):
         return self.entries.all().exists()
 
+    def count_entry_invoice(self):
+        return len(self.entries.all())
+
     @property
     def number(self):
-        return "{:06d}".format(self.pk)
+        return "{:010d}".format(self.pk)
 
 
 class InvoiceEntry(TimeStampedModel):

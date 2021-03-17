@@ -1,21 +1,93 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% load static %} {% block content %}
 
-{% block content %}
-<h3>Etat de vente du restaurant</h3>
-<form action="#" method="GET" >
-    <div class="mb-3">
-        <select class="form-control">
-            <option>Journalier</option>
-            <option>Hebdomadaire</option>
-            <option>Mensuel</option>
-        </select>
-    </div>
+<div class="container">
+    {% if 'periode' not in request.GET %}
+	<h3>Etat de vente du restaurant</h3>
+	<form action="" method="GET" >
+		<div class="mb-3">
+			<select class="form-control" name="periode" >
+				<option value="journalier" >Journalier</option>
+				<option value="hebdomadaire">Hebdomadaire</option>
+				<option value="mensuel">Mensuel</option>
+			</select>
+		</div>
 
-    <div class="mb-3 d-flex align-items-center">
-        <button class="btn btn-dark" type="submit">Soumettre</button>
-        <div class="spinner-border text-dark" role="status" style="margin-left:12px; display:none">
-            <span class="visually-hidden ml-3">Loading...</span>
-        </div>
-    </div>
-</form>
+		<div class="mb-3 d-flex align-items-center">
+			<button class="btn btn-dark" type="submit">Soumettre</button>
+			<div
+				class="spinner-border text-dark"
+				role="status"
+				style="margin-left: 12px; display: none"
+			>
+				<span class="visually-hidden ml-3">Loading...</span>
+			</div>
+		</div>
+	</form>
+    {% else %}
+    <div class="row">
+		<div class="col-lg-12">
+			<div class="card-body">
+				<h1 class="" style="text-transform: uppercase">
+					RESTAURANT LE VERGER, INC
+				</h1>
+				<h3 class="" style="text-transform: uppercase">
+					Etat de vente {{request.GET.periode}}
+				</h3>
+				<address>
+					<p>
+						Date et heure du jour: {% now "SHORT_DATETIME_FORMAT" %}
+					</p>
+					<p>
+						Personne en charge: {{ user.first_name }} {{user.last_name }}
+					</p>
+					<p>Email: {{user.email}}</p>
+				</address>
+
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>DATE</th>
+							<th>ORDER NUMBER</th>
+							<th>SHIP TO</th>
+							<th>ENTRY QTY</th>
+                            <th>TOTAL AMOUNT</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for invoice in invoices %}
+						<tr>
+							<td>{{ forloop.counter }}</td>
+							<td>{{invoice.date}}</td>
+							<td>#{{invoice.number}}</td>
+							<td>
+                                Salle {{invoice.room.name}}, Table {{invoice.table_number}},
+                            </td>
+							<td>{{invoice.count_entry_invoice}}</td>
+                            <td>{{invoice.total_price}} FCFA</td>
+						</tr>
+						{% empty %}
+						<tr>
+							<td colspan="6" style="text-align: center">
+								<h3>Pas de vente realiser.</h3>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5" style="text-transform: uppercase">
+								RECETTE {{request.GET.periode}}
+							</td>
+							<td>{{recette}} FCFA</td>
+						</tr>
+					</tfoot>
+				</table>
+				<br />
+			</div>
+		</div>
+	</div>
+    {% endif %}
+	
+</div>
 {% endblock content %}

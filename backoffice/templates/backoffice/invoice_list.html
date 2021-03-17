@@ -11,16 +11,16 @@
 					<th scope="col">DATE</th>
 					<th scope="col">SHIP TO</th>
 					<th scope="col">STATUT</th>
-					<th scope="col">AMOUNT</th>
+					<th scope="col">TOTAL AMOUNT</th>
 					<th scope="col">ACTION</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for invoice in invoices %} {% if invoice.is_valid %}
+				{% for invoice in invoices %} 
 				<tr>
-					<th scope="row">1</th>
+					<th scope="row">{{ forloop.counter }}</th>
 					<td>#{{invoice.number}}</td>
-					<td>{{invoice.created}}</td>
+					<td>{{invoice.date}}</td>
 					<td>
 						Salle {{invoice.room.name}}, Table
 						{{invoice.table_number}},
@@ -35,12 +35,12 @@
 					<td>{{invoice.total_price}} XAF</td>
 					<td>
 						{% if not invoice.is_paid %}
-						<a href="" class="btn btn-success">Payer la facturer</a>
+						<a href="{% url 'backoffice:invoice_mark_as_paid' invoice.id %}" class="btn btn-success">Payer la facturer</a>
 						{% endif %}
                         <a href="" class="btn btn-warning"><span data-feather="printer"></span></a>
 					</td>
 				</tr>
-				{% endif %} {% endfor %}
+				{% endfor %}
 			</tbody>
 		</table>
 	</div>
