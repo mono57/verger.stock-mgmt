@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="col-6">
+    {% if messages %} {% for message in messages %}
+    <div class="alert alert-dark">{{message}}</div>
+    {% endfor %} {% endif %}
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5">Enregistrer une nouvelle formule</h1>
+        <a href="{% url 'backoffice:formula-list' %}">Toutes les formules</a>
+    </div>
+    <form method="post">
+        {% csrf_token %} {% for input in form %}
+        <div class="mb-3">
+            <label for="{{input.name}}">{{input.label}}</label> {{input}}
+        </div>
+
+        {% endfor %}
+
+        <div class="mb-3 d-flex align-items-center">
+            <button class="btn btn-dark" type="submit">Enregistrer</button>
+            <div class="spinner-border text-dark" role="status" style="margin-left: 12px; display: none">
+                <span class="visually-hidden ml-3">Loading...</span>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

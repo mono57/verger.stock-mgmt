@@ -22,7 +22,7 @@ from django.views.generic.edit import UpdateView
 from django.http import JsonResponse
 from django.contrib import messages
 
-from backoffice.models import Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price, Transfert, Dish, Drink
+from backoffice.models import PartitionFormulla, Buying, BuyingEntry, PartitionFormulla, Portion, Product, Room, Price, Transfert, Dish, Drink
 from backoffice.forms import (
     BuyingEntryModelForm,
     BuyingModelForm,
@@ -31,7 +31,8 @@ from backoffice.forms import (
     InvoiceModelForm,
     ProductModelForm,
     RoomModelForm,
-    UserCreationForm)
+    UserCreationForm,
+    FormulaModelForm)
 
 
 User = get_user_model()
@@ -58,6 +59,25 @@ class ProductListView(LoginRequiredMixin, ListView):
     template_name = 'backoffice/product_list.html'
     model = Product
     context_object_name = 'products'
+
+
+class FormulaCreateView(
+        LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = 'backoffice/formula_form.html'
+    success_url = reverse_lazy('backoffice:formula-add')
+    form_class = FormulaModelForm
+    success_message = 'Votre formule a été ajouté'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formulas'] = PartitionFormulla.objects.all()
+        return context
+
+
+class FormulaListView(LoginRequiredMixin, ListView):
+    template_name = 'backoffice/formula_list.html'
+    model = PartitionFormulla
+    context_object_name = 'formulas'
 
 
 class RoomCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):

@@ -30,18 +30,20 @@ class PartitionFormulla(TimeStampedModel):
         verbose_name='Type de préparation'
     )
     portions_name = models.CharField(
-        max_length=50, verbose_name='Nom de portion', default='')
+        max_length=100, verbose_name='Nom de portion', default='')
     input = models.IntegerField(
-        default=1, verbose_name="Quantité en kg ou litre")
+        default=1, verbose_name="Quantité en entrée")
+    input_unit = models.CharField(
+        max_length=100, verbose_name="Unité de mesure en entrée", default='')
     output = models.IntegerField(
-        verbose_name='Nombre de portions ou consos pour 1 kg ou litre')
+        verbose_name='Nombre de portions')
 
     class Meta:
         verbose_name = 'Formule de partition'
         verbose_name_plural = 'Formules de partition'
 
     def __str__(self):
-        return self.cooking_type + '(' + str(self.input) + 'Kg/L -> ' + str(self.output) + ' Portion(s))'
+        return self.cooking_type + '(' + str(self.input) + '{} -> '.format(self.input_unit) + str(self.output) + ' Portion(s))'
 
     def compute_stock_quantity(self, buying_qty):
         stock_quantity = buying_qty * (self.output / float(self.input))

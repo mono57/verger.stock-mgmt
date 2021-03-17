@@ -46,4 +46,6 @@ urlpatterns = [
     path('ajax/ajax_get_max_portion_number/',
          views.ajax_get_max_portion_number,
          name='ajax_get_max_portion_number'),
+    path('formula/add/', views.FormulaCreateView.as_view(), name='formula-add'),
+    path('formula/list/', views.FormulaListView.as_view(), name='formula-list'),
 ]

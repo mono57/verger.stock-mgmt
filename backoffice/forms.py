@@ -5,8 +5,8 @@ from enum import Enum
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.utils.translation import override
-from backoffice.models import (
-    Buying, BuyingEntry, Dish, Drink, Invoice, InvoiceEntry, PartitionFormulla, Product, Room)
+from backoffice.models import  (
+    PartitionFormulla, Buying, BuyingEntry, Dish, Drink, Invoice, InvoiceEntry, PartitionFormulla, Product, Room)
 
 
 User = get_user_model()
@@ -28,6 +28,26 @@ class ProductModelForm(forms.ModelForm):
         qs = Product.objects.filter(name=name)
         if qs.exists():
             raise forms.ValidationError('Un produit de même existe déjà !')
+        return name
+
+
+class FormulaModelForm(forms.ModelForm):
+    class Meta:
+        model = PartitionFormulla
+        fields = ('cooking_type', 'portions_name', 'input', 'input_unit', 'output')
+        widgets = {
+            'cooking_type': forms.TextInput(attrs={'class': 'form-control'}),
+            'portions_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'input': forms.NumberInput(attrs={'class': 'form-control'}),
+            'input_unit': forms.TextInput(attrs={'class': 'form-control'}),
+            'output': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('portions_name')
+        qs = PartitionFormulla.objects.filter(name=name)
+        if qs.exists():
+            raise forms.ValidationError('Une formule de même nom existe déjà !')
         return name
 
 

@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="col-7">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h5 mt-2 mb-0">Les formules du Restaurant </h1>
+        <a href="{% url 'backoffice:formula-add' %}">Ajouter une formule</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>type de préparation</th>
+                    <th>Entrée</th>
+                    <th>Sortie</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formula in formulas %}
+                <tr>
+                    <td>{{formula.pk}}</td>
+                    <td>{{formula.portions_name}}</td>
+                    <td>{{formula.cooking_type}}</td>
+                    <td>{{formula.input}} {{formula.input_unit}}</td>
+                    <td>{{formula.output}}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Aucun produit</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock content %}
