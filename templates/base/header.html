@@ -2,11 +2,14 @@
 {% url 'backoffice:room-add' as room_add_url %} 
 {% url 'backoffice:room-list' as room_list_url %} 
 {% url 'backoffice:product-add' as product_add_url %} 
-{% url 'backoffice:product-list' as product_list_url%} 
+{% url 'backoffice:product-list' as product_list_url %}
+{% url 'backoffice:formula-add' as formula_add_url %} 
+{% url 'backoffice:formula-list' as formula_list_url%} 
 {% url 'backoffice:user-add' as user_add_url %} 
 {% url 'backoffice:user-list' as user_list_url %} 
-{% with is_superuser=request.user.is_superuser %}
 
+
+{% with is_superuser=request.user.is_superuser %}
 <nav class="navbar navbar-expand-lg sticky-top navbar-light flex-md-nowrap bg-light" style="border-bottom: 0.1rem solid #dedfe0">
     <div class="container-fluid">
         <a href="{% url 'backoffice:home' %}" class="h3 text-decoration-none text-dark">Verger</a> {% if request.user.is_authenticated %}
@@ -26,6 +29,8 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {% if is_superuser %}
                         <li><a class="dropdown-item" href="{{room_add_url}}">Ajouter une salle de vente</a></li>
+                        <li><a class="dropdown-item" href="{{formula_add_url}}">Ajouter une formule</a></li>
+                        <li><a class="dropdown-item" href="{{formula_list_url}}">Toutes les formules</a></li>
                         <li><a class="dropdown-item" href="{{product_add_url}}">Ajouter un produit</a></li>
                         {% endif %}
                         <li><a class="dropdown-item" href="">Etat de stock</a></li>
